@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pet Store</title>
+    <link rel="stylesheet" href="./webThuCung.css" />
+  </head>
+  <body>
+    <header class="header-1">
+      <div class="logo">
+        <a href="webThuCung.html">
+          <img src="images/logo.avif" alt="logo" />
+        </a>
+      </div>
+      <form action="#" method="get" class="search-form" id="search-form">
+        <input
+          type="text"
+          name="search"
+          placeholder="Search pets..."
+          id="search-input"
+        />
+        <button class="button" type="submit">Search</button>
+      </form>
+      <nav class="nav">
+        <ul class="nav-list">
+          <li class="bo1"><a href="#">Home</a></li>
+          <li class="bo2"><a href="#">Product</a></li>
+          <li class="bo3"><a href="#">Contact</a></li>
+          <li id="auth-thinks">
+            <a href="login.html" id="login-link">Login</a>
+            <a href="register.html" id="register-link">Register</a>
+          </li>
+          <li>
+            <a href="cart.html" id="cart-link"
+              >Cart(<span id="cart-count">0</span>)</a
+            >
+          </li>
+          <li id="account-link" style="display: none">
+            <a href="account.html">My Account</a>
+            <a href="#" id="logout-link ">Logout</a>
+          </li>
+        </ul>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <h1>Welcome to Pet Store</h1>
+        <p>Find everything for your furry friends</p>
+      </section>
+      <section id="featured-products" class="featured-section">
+        <h2>Featured Products</h2>
+        <div class="products-grid" id="featured-products-grid"></div>
+      </section>
+
+      <section id="all-products" class="products-section">
+        <h2>All Products</h2>
+        <div class="filter-controls">
+          <select id="category-filter">
+            <option value="all">All categories</option>
+          </select>
+          <select id="price-filter">
+            <option class="all">All Prices</option>
+            <option class="0-50">$0-$50</option>
+            <option class="50-100">$50-$100</option>
+            <option class="100-500">$100-$500</option>
+          </select>
+          <select id="sort-by">
+            <option value="default">Sort By</option>
+            <option value="price-low">Price: Low to High</option>
+            <option value="price-high">Price: High to Low</option>
+            <option value="name-asc">Name: A-Z</option>
+            <option value="name-desc">Name: Z-A</option>
+          </select>
+        </div>
+        <div class="products-grid" id="all-products-grid"></div>
+        <div class="pagination" id="pagination"></div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>&copy; 2023 Pet Store. All rights reserved.</p>
+    </footer>
+
+    <script src="js/mock-data.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/cart.js"></script>
+  </body>
+</html>
