@@ -27,7 +27,7 @@
           <li class="bo1"><a href="#">Home</a></li>
           <li class="bo2"><a href="#">Product</a></li>
           <li class="bo3"><a href="#">Contact</a></li>
-          <li id="auth-thinks">
+          <li id="auth-links">
             <a href="login.html" id="login-link">Login</a>
             <a href="register.html" id="register-link">Register</a>
           </li>
@@ -38,7 +38,7 @@
           </li>
           <li id="account-link" style="display: none">
             <a href="account.html">My Account</a>
-            <a href="#" id="logout-link ">Logout</a>
+            <a href="#" id="logout-link">Logout</a>
           </li>
         </ul>
       </nav>
@@ -46,41 +46,63 @@
 
     <main>
       <section class="hero">
-        <h1>Welcome to Pet Store</h1>
-        <p>Find everything for your furry friends</p>
-      </section>
-      <section id="featured-products" class="featured-section">
-        <h2>Featured Products</h2>
-        <div class="products-grid" id="featured-products-grid"></div>
+        <h2>Chào mừng đến với Pet Shop</h2>
+        <p>Nơi bạn tìm thấy những người bạn bốn chân đáng yêu nhất</p>
+        <button class="btn">Xem thu cung</button>
       </section>
 
-      <section id="all-products" class="products-section">
-        <h2>All Products</h2>
-        <div class="filter-controls">
-          <select id="category-filter">
-            <option value="all">All categories</option>
-          </select>
-          <select id="price-filter">
-            <option class="all">All Prices</option>
-            <option class="0-50">$0-$50</option>
-            <option class="50-100">$50-$100</option>
-            <option class="100-500">$100-$500</option>
-          </select>
-          <select id="sort-by">
-            <option value="default">Sort By</option>
-            <option value="price-low">Price: Low to High</option>
-            <option value="price-high">Price: High to Low</option>
-            <option value="name-asc">Name: A-Z</option>
-            <option value="name-desc">Name: Z-A</option>
+      <section id="products" class="products">
+        <h2>Thú cưng của chúng tôi</h2>
+        <div class="product-filters">
+          <select id="petTypeFilter">
+            <option value="all">Tất cả</option>
+            <option value="dog">Chó</option>
+            <option value="cat">Mèo</option>
           </select>
         </div>
-        <div class="products-grid" id="all-products-grid"></div>
-        <div class="pagination" id="pagination"></div>
+        <div class="product-grid" id="petGrid">
+          <!-- sanpham duoc them bang javascript -->
+        </div>
       </section>
+
+      <section id="services" class="services">
+        <h2>Dịch vụ chăm sóc</h2>
+        <div class="service-grid">
+          <div class="service-card">
+            <i class="fas fa-bath"></i>
+            <h3>Tam & Spa</h3>
+            <p>Dich vu tam rua va cham soc sac dep cho thu cung</p>
+            <button class="btn">Dat Lich</button>
+          </div>
+          <div>
+            <i></i>
+            <h3>Kham benh</h3>
+            <p>Dich vu kham chua benh boi bac si thu y</p>
+            <button class="btn">Dat Lich</button>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- Modal giỏ hàng -->
+      <div id="cartModal" class="modal">
+        <div class="modal-content">
+          <span class="close">&times;</span>
+          <h2>Giỏ hàng</h2>
+          <div id="cartItems">
+            <!-- Sản phẩm trong giỏ hàng sẽ được thêm bằng JavaScript -->
+          </div>
+          <div class="cart-total">
+            <h3>Tổng cộng: <span id="cartTotal">0</span> VNĐ</h3>
+          </div>
+          <button class="btn" id="checkoutBtn">Thanh toán</button>
+        </div>
+      </div>
+    </main>
     </main>
 
     <footer class="footer">
-      <p>&copy; 2023 Pet Store. All rights reserved.</p>
+      <p>&copy; 2025 Pet Store. All rights reserved.</p>
     </footer>
 
     <script src="js/mock-data.js"></script>
