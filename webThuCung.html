@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Pet Store</title>
     <link rel="stylesheet" href="./webThuCung.css" />
+    <link rel="stylesheet" href="./product.css" />
   </head>
   <body>
     <header class="header-1">
@@ -24,13 +25,17 @@
       </form>
       <nav class="nav">
         <ul class="nav-list">
-          <li class="bo1"><a href="#">Home</a></li>
-          <li class="bo2"><a href="#">Product</a></li>
-          <li class="bo3"><a href="#">Contact</a></li>
-          <li id="auth-links">
-            <a href="login.html" id="login-link">Login</a>
-            <a href="register.html" id="register-link">Register</a>
-          </li>
+         <li><a href="#home">Home</a></li>
+          <li><a href="#petGrid">Product</a></li>
+          <li><a href="#con">Contact</a></li>
+
+       <li id="auth-links">
+  <a href="login.html" id="login-link">Login</a>
+  <a href="register.html" id="register-link">Register</a>
+</li>
+<li id="account-link" style="display: none"></li>
+
+
           <li>
             <a href="cart.html" id="cart-link"
               >Cart(<span id="cart-count">0</span>)</a
@@ -45,10 +50,10 @@
     </header>
 
     <main>
-      <section class="hero">
+      <section class="hero" id="home">
         <h2>Chào mừng đến với Pet Shop</h2>
         <p>Nơi bạn tìm thấy những người bạn bốn chân đáng yêu nhất</p>
-        <button class="btn">Xem thu cung</button>
+        <a href="./webThuCung.html/#petGrid"><button class="btn">Xem thu cung</button></a>
       </section>
 
       <section id="products" class="products">
@@ -60,6 +65,8 @@
             <option value="cat">Mèo</option>
           </select>
         </div>
+
+        
         <div class="product-grid" id="petGrid">
           <!-- sanpham duoc them bang javascript -->
         </div>
@@ -101,13 +108,15 @@
     </main>
     </main>
 
-    <footer class="footer">
+    <footer class="footer" id="con"> 
       <p>&copy; 2025 Pet Store. All rights reserved.</p>
     </footer>
+    <script type="module" src="js/mock-data.js"></script>
+    <script type="module" src="js/auth.js"></script>
+    <script type="module" src="js/main.js"></script>
+    <script type="module" src="js/cart.js"></script>
+     
 
-    <script src="js/mock-data.js"></script>
-    <script src="js/auth.js"></script>
-    <script src="js/main.js"></script>
-    <script src="js/cart.js"></script>
+
   </body>
 </html>

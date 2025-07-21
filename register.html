@@ -12,7 +12,7 @@
     <!-- Header giống index.html -->
     <header class="header-1">
       <div class="logo">
-        <a href="index.html"><img src="images/logo.avif" alt="logo" /></a>
+        <a href="webThuCung.html"><img src="images/logo.avif" alt="logo" /></a>
       </div>
       <form action="#" method="get" class="search-form">
         <input type="text" name="search" placeholder="Search pets..." />
@@ -20,9 +20,9 @@
       </form>
       <nav class="nav">
         <ul class="nav-list">
-          <li><a href="index.html">Home</a></li>
-          <li><a href="#">Product</a></li>
-          <li><a href="#">Contact</a></li>
+          <li><a href="./webThuCung.html">Home</a></li>
+          <li><a href="./webThuCung.html/#petGrid">Product</a></li>
+          <li><a href="./webThuCung.html/#con">Contact</a></li>
           <li id="auth-links">
             <a href="login.html">Login</a>
             <a href="register.html">Register</a>
@@ -38,7 +38,7 @@
     <main>
       <div class="auth-container">
         <h2>Đăng ký</h2>
-        <form id="registerForm" action="#" method="post">
+        <form id="registerForm">
           <label for="registerName">Họ và tên</label>
           <input type="text" id="registerName" name="name" required />
 
@@ -52,9 +52,15 @@
             name="password"
             required
           />
-
-          <button type="submit">Register</button>
+          <label for="registerConfirmPassword">Xác nhận mật khẩu</label>
+          <input
+            type="password"
+            id="registerConfirmPassword"
+            name="confirmPassword"
+            required
+          />
         </form>
+        <button type="submit" id="btn-register">Register</button>
         <div class="auth-footer">
           Đã có tài khoản? <a href="login.html">Đăng nhập</a>
         </div>
@@ -67,6 +73,6 @@
     </footer>
 
     <!-- Các script nếu cần -->
-    <script src="js/auth.js"></script>
+    <script type="module" src="js/auth.js"></script>
   </body>
 </html>

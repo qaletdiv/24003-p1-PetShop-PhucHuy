@@ -1,5 +1,5 @@
 // mock-data.js
-const petsData = [
+export const petsData = [
   {
     id: 1,
     name: "Chó Alaska",
@@ -7,10 +7,14 @@ const petsData = [
     breed: "Alaska",
     age: "3 tháng",
     gender: "Đực",
-    price: 15000000,
+    price: 1500,
     image: "images/alaska.jpg",
     description: "Alaska thuần chủng, khỏe mạnh, đã tiêm phòng đầy đủ",
     vaccinated: true,
+    reviews: {
+      rating: 4.7,
+      count: 52,
+    },
   },
   {
     id: 2,
@@ -19,11 +23,14 @@ const petsData = [
     breed: "British Shorthair",
     age: "2 tháng",
     gender: "Cái",
-    price: 8000000,
-    image:
-      "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
+    price: 800,
+    image: "./images/catBrist.avif",
     description: "Mèo Anh thuần chủng, màu xám xanh, mắt vàng đồng",
     vaccinated: true,
+    reviews: {
+      rating: 4.5,
+      count: 38,
+    },
   },
   {
     id: 3,
@@ -32,11 +39,14 @@ const petsData = [
     breed: "Poodle",
     age: "4 tháng",
     gender: "Cái",
-    price: 10000000,
-    image:
-      "https://images.unsplash.com/photo-1594149929911-78975a43d4f5?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
+    price: 1000,
+    image: "./images/poodle.avif",
     description: "Poodle màu nâu đỏ, thông minh, dễ huấn luyện",
     vaccinated: true,
+    reviews: {
+      rating: 4.8,
+      count: 61,
+    },
   },
   {
     id: 4,
@@ -45,10 +55,77 @@ const petsData = [
     breed: "Persian",
     age: "5 tháng",
     gender: "Đực",
-    price: 12000000,
-    image:
-      "https://images.unsplash.com/photo-1533738363-b7f9aef128ce?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
+    price: 1200,
+    image: "./images/persiancat.avif",
     description: "Mèo Ba Tư mặt tịt, lông dài, màu trắng tuyết",
     vaccinated: false,
+    reviews: {
+      rating: 4.2,
+      count: 24,
+    },
+  },
+  {
+    id: 5,
+    name: "Chó Corgi",
+    type: "dog",
+    breed: "Corgi",
+    age: "3 tháng",
+    gender: "Cái",
+    price: 2000,
+    image: "./images/corgi.avif",
+    description: "Corgi chân ngắn siêu dễ thương",
+    vaccinated: true,
+    reviews: {
+      rating: 4.9,
+      count: 79,
+    },
+  },
+  {
+    id: 6,
+    name: "Mèo Ragdoll",
+    type: "cat",
+    breed: "Ragdoll",
+    age: "4 tháng",
+    gender: "Cái",
+    price: 1500,
+    image: "./images/ragdollcat.jpeg",
+    description: "Mèo Ragdoll lông dài, tính cách hiền lành",
+    vaccinated: true,
+    reviews: {
+      rating: 4.6,
+      count: 35,
+    },
+  },
+  {
+    id: 7,
+    name: "Chó Pug",
+    type: "dog",
+    breed: "Pug",
+    age: "2 tháng",
+    gender: "Đực",
+    price: 850,
+    image: "./images/Pug-dog.webp",
+    description: "Pug mặt xệ đáng yêu, thân thiện với trẻ em",
+    vaccinated: true,
+    reviews: {
+      rating: 4.3,
+      count: 40,
+    },
+  },
+  {
+    id: 8,
+    name: "Mèo Bengal",
+    type: "cat",
+    breed: "Bengal",
+    age: "5 tháng",
+    gender: "Cái",
+    price: 1800,
+    image: "./images/catbengal.avif",
+    description: "Bengal họa tiết da báo, năng động",
+    vaccinated: true,
+    reviews: {
+      rating: 4.4,
+      count: 46,
+    },
   },
 ];

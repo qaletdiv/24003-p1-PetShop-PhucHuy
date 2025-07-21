@@ -20,6 +20,9 @@ body {
   color: var(--dark-color);
   background-color: var(--light-color);
 }
+html {
+  scroll-behavior: smooth;
+}
 
 /* HEADER */
 .header-1 {
@@ -31,9 +34,9 @@ body {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 .logo img {
-  height: 2.5rem;
-  width: 2.5rem;
-  border-radius: 10%;
+  height: 3.5rem;
+  width: 3.5rem;
+  border-radius: 2rem;
   transition: transform 0.3s ease;
 }
 .logo img:hover {
@@ -115,8 +118,28 @@ body {
   font-size: 1.5rem;
   max-width: 800px;
 }
+.hero button {
+  background-color: var(--accent-color);
+  color: white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  margin-top: 20px;
+  border-radius: 30px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  font-style: bold;
+  transition: background-color 0.3s ease;
+}
+.hero button:hover {
+  background-color: #e68a00;
+}
 
-/* FILTER DROPDOWN */
+.products h2 {
+  text-align: center;
+  margin: 2rem 0;
+  font-size: 2.5rem;
+  color: var(--primary-color);
+}
 .product-filters {
   display: flex;
   justify-content: center;
@@ -136,6 +159,27 @@ body {
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 1.5rem;
   padding: 1rem 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
+.product-layout {
+  display: flex;
+  gap: 2rem;
+  padding: 1rem 2rem;
+  flex-wrap: wrap;
+}
+
+.product-column {
+  flex: 1;
+  min-width: 300px;
+}
+
+@media (max-width: 768px) {
+  .product-layout {
+    flex-direction: column;
+  }
 }
 
 /* PET CARD */
@@ -310,7 +354,7 @@ body {
 }
 
 .service-card {
-  background: #f24506;
+  background: #ff7e5f;
   padding: 2rem;
   border-radius: 10px;
   text-align: center;

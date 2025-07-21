@@ -12,7 +12,7 @@
     <!-- Header giống index.html -->
     <header class="header-1">
       <div class="logo">
-        <a href="index.html"><img src="images/logo.avif" alt="logo" /></a>
+        <a href="webThuCung.html"><img src="images/logo.avif" alt="logo" /></a>
       </div>
       <form action="#" method="get" class="search-form">
         <input type="text" name="search" placeholder="Search pets..." />
@@ -20,9 +20,9 @@
       </form>
       <nav class="nav">
         <ul class="nav-list">
-          <li><a href="index.html">Home</a></li>
-          <li><a href="#">Product</a></li>
-          <li><a href="#">Contact</a></li>
+          <li><a href="./webThuCung.html">Home</a></li>
+          <li><a href="./webThuCung.html/#petGrid">Product</a></li>
+          <li><a href="./webThuCung.html/#con">Contact</a></li>
           <li id="auth-links">
             <a href="login.html">Login</a>
             <a href="register.html">Register</a>
@@ -38,15 +38,14 @@
     <main>
       <div class="auth-container">
         <h2>Đăng nhập</h2>
-        <form id="loginForm" action="#" method="post">
+        <form id="loginForm">
           <label for="loginEmail">Email</label>
           <input type="email" id="loginEmail" name="email" required />
 
           <label for="loginPassword">Mật khẩu</label>
           <input type="password" id="loginPassword" name="password" required />
-
-          <button type="submit">Login</button>
         </form>
+        <button type="submit" id="btn-login">Login</button>
         <div class="auth-footer">
           Chưa có tài khoản? <a href="register.html">Đăng ký ngay</a>
         </div>
@@ -59,6 +58,6 @@
     </footer>
 
     <!-- Các script nếu cần -->
-    <script src="js/auth.js"></script>
+    <script type="module" src="js/auth.js"></script>
   </body>
 </html>
