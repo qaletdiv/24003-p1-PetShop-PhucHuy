@@ -37,7 +37,7 @@ function loadCart() {
   });
 }
 
-// Modal logic
+// Modal logic ve viec hiển thị giỏ hàng
 const cartModal = document.getElementById("cartModal");
 const cartLink = document.getElementById("cart-link");
 const closeModalBtn = document.querySelector(".close");
@@ -59,9 +59,23 @@ if (cartLink && cartModal && closeModalBtn) {
     }
   });
 }
-
 document.getElementById("checkoutBtn")?.addEventListener("click", () => {
+  const cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+  if (cart.length === 0) {
+    alert("Giỏ hàng của bạn đang trống!");
+    return;
+  }
+
   alert("Cảm ơn bạn đã mua hàng!");
   localStorage.removeItem("cart");
   loadCart();
+
+  //Add confetti effect on thanh toán
+
+  confetti({
+    particleCount: 100,
+    spread: 70,
+    origin: { y: 0.6 },
+  });
 });
