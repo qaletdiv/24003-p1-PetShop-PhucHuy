@@ -39,6 +39,14 @@ function renderProducts(data) {
 }
 
 function addToCart(id) {
+  const registerModal = document.getElementById("registerModal");
+  const loginModal = document.getElementById("loginModal");
+  const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+  if (!currentUser) {
+    alert("Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng");
+    loginModal.style.display = "block";
+    return;
+  }
   let cart = JSON.parse(localStorage.getItem("cart")) || [];
   const existingItem = cart.find((item) => item.id === id);
 
@@ -79,3 +87,30 @@ renderProducts(petsData);
 updateCartCount();
 handleFilterChange();
 /////////
+document.addEventListener("DOMContentLoaded", () => {
+  const authLinks = document.getElementById("auth-links");
+  const accountLink = document.getElementById("account-link");
+
+  const userData = localStorage.getItem("currentUser");
+
+  if (userData) {
+    const user = JSON.parse(userData);
+
+    authLinks.style.display = "none";
+    accountLink.style.display = "flex";
+    accountLink.style.alignItems = "center";
+    accountLink.style.gap = "10px";
+
+    accountLink.innerHTML = `
+      <img src="${user.avatar}" alt="Avatar" style="width:32px;height:32px;border-radius:50%;" />
+      <span>Hi, ${user.userName}</span>
+      <a href="#" id="logout-link" style="color: red;">Logout</a>
+    `;
+
+    document.getElementById("logout-link").addEventListener("click", (e) => {
+      e.preventDefault();
+      localStorage.removeItem("currentUser");
+      window.location.reload();
+    });
+  }
+});

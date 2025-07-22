@@ -53,6 +53,11 @@
     </main>
 
     <!-- Các script nếu cần -->
-    <script type="module" src="js/auth.js"></script>
+    <!-- <script type="module" src="js/auth.js"></script> -->
+    <!-- Inside <script> block at end -->
+    <script type="module">
+      import { login } from "./js/auth.js";
+      document.getElementById("btn-login").addEventListener("click", login);
+    </script>
   </body>
 </html>

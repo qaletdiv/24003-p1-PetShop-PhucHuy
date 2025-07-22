@@ -67,6 +67,13 @@
       </div>
     </main>
 
-    <script type="module" src="js/auth.js"></script>
+    <!-- <script type="module" src="js/auth.js"></script> -->
+    <!-- Inside <script> block at end -->
+    <script type="module">
+      import { register } from "./js/auth.js";
+      document
+        .getElementById("btn-register")
+        .addEventListener("click", register);
+    </script>
   </body>
 </html>
