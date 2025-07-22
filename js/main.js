@@ -114,3 +114,12 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
+
+//search engine
+document.getElementById("search-input").addEventListener("input", function () {
+  const searchTerm = this.value.toLowerCase();
+  const filteredPets = petsData.filter((pet) =>
+    pet.name.toLowerCase().includes(searchTerm)
+  );
+  renderProducts(filteredPets);
+});
