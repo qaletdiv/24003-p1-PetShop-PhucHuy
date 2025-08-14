@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Products - Pet Store</title>
+    <link rel="stylesheet" href="webThuCung.css" />
+  </head>
+  <body>
+    <header class="header-1">
+      <div class="logo">
+        <a href="webThuCung.html"><img src="images/logo.avif" alt="logo" /></a>
+      </div>
+      <form class="search-form" id="search-form">
+        <input type="text" id="search-input" placeholder="Search pets..." />
+        <button type="submit">Search</button>
+      </form>
+      <nav class="nav">
+        <ul class="nav-list">
+          <li><a href="webThuCung.html">Home</a></li>
+          <li>
+            <a href="cart.html">Cart(<span id="cart-count">0</span>)</a>
+          </li>
+          <li><a href="account.html">My Account</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main>
+      <section class="products">
+        <h2>Danh sách sản phẩm</h2>
+        <div class="product-filters">
+          <select id="sortOption">
+            <option value="default">Sắp xếp</option>
+            <option value="priceAsc">Giá tăng dần</option>
+            <option value="priceDesc">Giá giảm dần</option>
+            <option value="nameAZ">Tên A-Z</option>
+          </select>
+          <input type="number" id="minPrice" placeholder="Min $" />
+          <input type="number" id="maxPrice" placeholder="Max $" />
+          <button id="filterPrice">Lọc giá</button>
+        </div>
+        <div class="product-grid" id="product-list"></div>
+        <div id="pagination" style="text-align: center; margin: 20px"></div>
+      </section>
+    </main>
+
+    <script type="module">
+      import { petsData } from "./js/mock-data.js";
+
+      const listEl = document.getElementById("product-list");
+      const paginationEl = document.getElementById("pagination");
+      const minPriceEl = document.getElementById("minPrice");
+      const maxPriceEl = document.getElementById("maxPrice");
+      const sortEl = document.getElementById("sortOption");
+      const filterBtn = document.getElementById("filterPrice");
+
+      let currentPage = 1;
+      const perPage = 4;
+
+      function applyFilters(data) {
+        const search = document
+          .getElementById("search-input")
+          .value.toLowerCase();
+        const min = parseFloat(minPriceEl.value) || 0;
+        const max = parseFloat(maxPriceEl.value) || Infinity;
+
+        let result = data.filter(
+          (p) =>
+            p.name.toLowerCase().includes(search) &&
+            p.price >= min &&
+            p.price <= max
+        );
+
+        switch (sortEl.value) {
+          case "priceAsc":
+            result.sort((a, b) => a.price - b.price);
+            break;
+          case "priceDesc":
+            result.sort((a, b) => b.price - a.price);
+            break;
+          case "nameAZ":
+            result.sort((a, b) => a.name.localeCompare(b.name));
+            break;
+        }
+
+        return result;
+      }
+
+      function renderPagination(total) {
+        const pages = Math.ceil(total / perPage);
+        paginationEl.innerHTML = "";
+        for (let i = 1; i <= pages; i++) {
+          const btn = document.createElement("button");
+          btn.textContent = i;
+          btn.onclick = () => {
+            currentPage = i;
+            render();
+          };
+          if (i === currentPage) btn.style.background = "#4ecdc4";
+          paginationEl.appendChild(btn);
+        }
+      }
+
+      function render() {
+        const filtered = applyFilters(petsData);
+        const start = (currentPage - 1) * perPage;
+        const end = start + perPage;
+        const sliced = filtered.slice(start, end);
+
+        listEl.innerHTML = "";
+        sliced.forEach((pet) => {
+          const div = document.createElement("div");
+          div.className = "pet-card";
+          div.innerHTML = `
+          <img src="${pet.image}" alt="${pet.name}" />
+          <div class="pet-info">
+            <h3>${pet.name}</h3>
+            <p>${pet.description}</p>
+            <p class="pet-price">$${pet.price}</p>
+            <a class="btn add-to-cart" href="product-detail.html?id=${pet.id}">Xem chi tiết</a>
+          </div>
+        `;
+          listEl.appendChild(div);
+        });
+
+        renderPagination(filtered.length);
+      }
+
+      document.getElementById("search-form").addEventListener("submit", (e) => {
+        e.preventDefault();
+        currentPage = 1;
+        render();
+      });
+
+      sortEl.addEventListener("change", () => render());
+      filterBtn.addEventListener("click", () => render());
+
+      render();
+    </script>
+  </body>
+</html>

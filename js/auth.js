@@ -16,12 +16,22 @@ export function register() {
   const confirmPassword = document.getElementById(
     "registerConfirmPassword"
   ).value;
+  if (!userName || !email || !password || !confirmPassword) {
+    alert("Please fill in all fields!");
+    alert("làm ơn điền đầy đủ thông tin!");
+    return;
+  }
 
   if (password !== confirmPassword) {
     alert("Passwords do not match!");
     return;
   }
 
+  if (email.indexOf("@") === -1 || email.indexOf(".") === -1) {
+    alert("Invalid email format!");
+    alert("Định dạng email không hợp lệ!");
+    return;
+  }
   const avatar = "https://i.pravatar.cc/40?u=" + email;
 
   const users = getUsers();
@@ -43,7 +53,16 @@ export function login() {
 
   const users = getUsers();
   const user = users.find((u) => u.email === email && u.password === password);
-
+  if (!email || !password) {
+    alert("Please fill in all fields!");
+    alert("làm ơn điền đầy đủ thông tin!");
+    return;
+  }
+  if (email.indexOf("@") === -1 || email.indexOf(".") === -1) {
+    alert("Invalid email format!");
+    alert("Định dạng email không hợp lệ!");
+    return;
+  }
   if (!user) {
     alert("Invalid credentials");
     return;

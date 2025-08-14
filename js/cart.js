@@ -41,7 +41,6 @@ function loadCart() {
 const cartModal = document.getElementById("cartModal");
 const cartLink = document.getElementById("cart-link");
 const closeModalBtn = document.querySelector(".close");
-
 if (cartLink && cartModal && closeModalBtn) {
   cartLink.addEventListener("click", (e) => {
     e.preventDefault();

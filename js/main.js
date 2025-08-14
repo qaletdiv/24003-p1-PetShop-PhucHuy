@@ -8,23 +8,31 @@ function renderProducts(data) {
   data.forEach((pet) => {
     const productCard = document.createElement("div");
     productCard.classList.add("product-card");
+    productCard.style.cursor = "pointer";
     productCard.innerHTML = `
-  <img src="${pet.image}" alt="${pet.name}" class="product-image">
-  <h3 class="product-name">${pet.name}</h3>
-  <p>Giống: ${pet.breed}</p>
-  <p>Tuổi: ${pet.age}</p>
-  <p>Giới tính: ${pet.gender}</p>
-  <p class="product-description">${pet.description}</p>
-  <div class="star-rating">
-    <span class="rating">${pet.reviews.rating.toFixed(1)}</span>
-    <span class="stars">${"★".repeat(
-      Math.round(pet.reviews.rating)
-    )}${"☆".repeat(5 - Math.round(pet.reviews.rating))}</span>
-  </div>
-  <p class="product-reviews">(${pet.reviews.count} đánh giá)</p>
-  <p class="product-price">$${pet.price}</p>
-  <button class="add-to-cart" data-id="${pet.id}">Thêm vào giỏ</button>
-`;
+      <img src="${pet.image}" alt="${pet.name}" class="product-image">
+      <h3 class="product-name">${pet.name}</h3>
+      <p>Giống: ${pet.breed}</p>
+      <p>Tuổi: ${pet.age}</p>
+      <p>Giới tính: ${pet.gender}</p>
+      <p class="product-description">${pet.description}</p>
+      <div class="star-rating">
+        <span class="rating">${pet.reviews.rating.toFixed(1)}</span>
+        <span class="stars">${"★".repeat(
+          Math.round(pet.reviews.rating)
+        )}${"☆".repeat(5 - Math.round(pet.reviews.rating))}</span>
+      </div>
+      <p class="product-reviews">(${pet.reviews.count} đánh giá)</p>
+      <p class="product-price">$${pet.price}</p>
+      <button class="add-to-cart" data-id="${pet.id}">Thêm vào giỏ</button>
+    `;
+
+    // Navigate to productDetail.html with pet id on card click (except button)
+    productCard.addEventListener("click", (e) => {
+      if (!e.target.classList.contains("add-to-cart")) {
+        window.location.href = `productDetail.html?id=${pet.id}`;
+      }
+    });
 
     productContainer.appendChild(productCard);
   });
@@ -116,10 +124,25 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 //search engine
-document.getElementById("search-input").addEventListener("input", function () {
-  const searchTerm = this.value.toLowerCase();
+// document.getElementById("search-form").addEventListener("submit", function (e) {
+//   e.preventDefault();
+//   const searchTerm = document
+//     .getElementById("search-input")
+//     .value.toLowerCase();
+//   const filteredPets = petsData.filter((pet) =>
+//     pet.name.toLowerCase().includes(searchTerm)
+//   );
+//   renderProducts(filteredPets);
+// });
+//search engine each word
+document.getElementById("search-form").addEventListener("submit", function (e) {
+  e.preventDefault();
+  const searchTerm = document
+    .getElementById("search-input")
+    .value.toLowerCase()
+    .split(" ");
   const filteredPets = petsData.filter((pet) =>
-    pet.name.toLowerCase().includes(searchTerm)
+    searchTerm.every((term) => pet.name.toLowerCase().includes(term))
   );
   renderProducts(filteredPets);
 });
