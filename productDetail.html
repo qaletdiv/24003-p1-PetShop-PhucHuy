@@ -1,73 +1,293 @@
-<!-- product-detail.html -->
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Chi tiết sản phẩm</title>
+    <title>Chi tiết sản phẩm - Pet Store</title>
     <link rel="stylesheet" href="webThuCung.css" />
+    <link rel="stylesheet" href="product.css" />
   </head>
   <body>
     <header class="header-1">
       <div class="logo">
-        <a href="webThuCung.html"><img src="images/logo.avif" alt="logo" /></a>
+        <a href="webThuCung.html">
+          <img src="images/logo.avif" alt="logo" />
+        </a>
       </div>
+      <form action="#" method="get" class="search-form" id="search-form">
+        <input
+          type="text"
+          name="search"
+          placeholder="Search pets..."
+          id="search-input"
+        />
+        <button class="button" type="submit">Search</button>
+      </form>
       <nav class="nav">
         <ul class="nav-list">
-          <li><a href="products.html">Sản phẩm</a></li>
-          <li><a href="cart.html">Giỏ hàng</a></li>
-          <li><a href="account.html">Tài khoản</a></li>
+          <li><a href="webThuCung.html">Home</a></li>
+          <li><a href="product.html">Product</a></li>
+          <li><a href="#con">Contact</a></li>
+          <li id="auth-links" class="fasUsers">
+            <a href="login.html" id="login-link">Login</a>
+            <a href="register.html" id="register-link">Register</a>
+          </li>
+          <li id="account-link" style="display: none">
+            <a href="account.html">My Account</a>
+            <a href="#" id="logout-link">Logout</a>
+          </li>
+          <li>
+            <a href="cart.html" id="cart-link"
+              >Cart(<span id="cart-count">0</span>)</a
+            >
+          </li>
         </ul>
       </nav>
     </header>
 
-    <main class="product-layout" id="detailContent"></main>
+    <main class="product-detail-container">
+      <div class="product-layout" id="detailContent">
+        <div class="loading">Loading...</div>
+      </div>
+    </main>
+
+    <!-- Cart Modal -->
+    <div id="cartModal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Giỏ hàng</h2>
+        <div id="cartItems"></div>
+        <div class="cart-total">
+          <strong>Tổng cộng: $<span id="cartTotal">0</span></strong>
+        </div>
+        <button id="checkoutBtn" class="btn">Thanh toán</button>
+      </div>
+    </div>
 
     <script type="module">
-      import { petsData } from "./mock-data.js";
+      import { petsData } from "./js/mock-data.js";
+      import confetti from "https://cdn.skypack.dev/canvas-confetti";
 
-      const user = JSON.parse(localStorage.getItem("currentUser"));
-      if (!user) {
-        alert("Bạn cần đăng nhập để xem chi tiết sản phẩm!");
-        window.location.href = "login.html";
+      // Authentication state management
+      function updateAuthState() {
+        const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+        const authLinks = document.getElementById("auth-links");
+        const accountLink = document.getElementById("account-link");
+        const loginLink = document.getElementById("login-link");
+        const registerLink = document.getElementById("register-link");
+        const logoutLink = document.getElementById("logout-link");
+
+        if (currentUser) {
+          authLinks.style.display = "none";
+          accountLink.style.display = "block";
+          accountLink.querySelector(
+            "a"
+          ).textContent = `Hi, ${currentUser.userName}`;
+        } else {
+          authLinks.style.display = "block";
+          accountLink.style.display = "none";
+        }
+
+        // Logout functionality
+        logoutLink?.addEventListener("click", (e) => {
+          e.preventDefault();
+          localStorage.removeItem("currentUser");
+          localStorage.removeItem("cart");
+          window.location.href = "webThuCung.html";
+        });
       }
 
-      const params = new URLSearchParams(window.location.search);
-      const id = parseInt(params.get("id"));
-      const pet = petsData.find((p) => p.id === id);
-      const container = document.getElementById("detailContent");
+      // Cart functionality
+      function updateCartCount() {
+        const cart = JSON.parse(localStorage.getItem("cart")) || [];
+        const total = cart.reduce((sum, item) => sum + item.quantity, 0);
+        const countEl = document.getElementById("cart-count");
+        if (countEl) countEl.textContent = total;
+      }
 
-      if (!pet) {
-        container.innerHTML = "<h2>Không tìm thấy sản phẩm!</h2>";
-      } else {
-        container.innerHTML = `
-        <div class="product-column">
-          <img src="${pet.image}" class="product-image" alt="${pet.name}" />
-        </div>
-        <div class="product-column">
-          <h2>${pet.name}</h2>
-          <p><strong>Giống:</strong> ${pet.breed}</p>
-          <p><strong>Tuổi:</strong> ${pet.age}</p>
-          <p><strong>Giới tính:</strong> ${pet.gender}</p>
-          <p><strong>Đã tiêm phòng:</strong> ${pet.vaccinated ? "✅" : "❌"}</p>
-          <p><strong>Giá:</strong> $${pet.price}</p>
-          <p>${pet.description}</p>
-          <button id="addToCartBtn" class="btn add-to-cart">Thêm vào giỏ hàng</button>
-        </div>
-      `;
+      function loadCart() {
+        const cartItemsEl = document.getElementById("cartItems");
+        const cartTotalEl = document.getElementById("cartTotal");
+        const cart = JSON.parse(localStorage.getItem("cart")) || [];
 
-        document
-          .getElementById("addToCartBtn")
-          .addEventListener("click", () => {
-            let cart = JSON.parse(localStorage.getItem("cart")) || [];
-            const existing = cart.find((item) => item.id === pet.id);
-            if (existing) existing.quantity += 1;
-            else cart.push({ ...pet, quantity: 1 });
+        cartItemsEl.innerHTML = "";
+        let total = 0;
 
+        cart.forEach((item, index) => {
+          const itemEl = document.createElement("div");
+          itemEl.classList.add("cart-item");
+          itemEl.innerHTML = `
+            <img src="${item.image}" alt="${item.name}">
+            <div class="cart-item-details">
+              <h4>${item.name}</h4>
+              <p>Số lượng: ${item.quantity}</p>
+              <p>Đơn giá: $${item.price}</p>
+              <p>Tổng: $${item.price * item.quantity}</p>
+            </div>
+            <div class="cart-item-actions">
+              <button class="btn remove" data-index="${index}">Xóa</button>
+            </div>
+          `;
+          cartItemsEl.appendChild(itemEl);
+          total += item.price * item.quantity;
+        });
+
+        cartTotalEl.textContent = total.toLocaleString("vi-VN");
+
+        // Add remove functionality
+        document.querySelectorAll(".remove").forEach((btn) => {
+          btn.addEventListener("click", (e) => {
+            const index = e.target.dataset.index;
+            cart.splice(index, 1);
             localStorage.setItem("cart", JSON.stringify(cart));
-            alert("Đã thêm vào giỏ hàng!");
+            loadCart();
+            updateCartCount();
           });
+        });
       }
+
+      // Cart modal functionality
+      const cartModal = document.getElementById("cartModal");
+      const cartLink = document.getElementById("cart-link");
+      const closeModalBtn = document.querySelector(".close");
+
+      if (cartLink && cartModal && closeModalBtn) {
+        cartLink.addEventListener("click", (e) => {
+          e.preventDefault();
+          cartModal.style.display = "block";
+          loadCart();
+        });
+
+        closeModalBtn.addEventListener("click", () => {
+          cartModal.style.display = "none";
+        });
+
+        window.addEventListener("click", (e) => {
+          if (e.target === cartModal) {
+            cartModal.style.display = "none";
+          }
+        });
+      }
+
+      // Checkout functionality
+      document.getElementById("checkoutBtn")?.addEventListener("click", () => {
+        const cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+        if (cart.length === 0) {
+          alert("Giỏ hàng của bạn đang trống!");
+          return;
+        }
+
+        alert("Cảm ơn bạn đã mua hàng!");
+        localStorage.removeItem("cart");
+        loadCart();
+        updateCartCount();
+        cartModal.style.display = "none";
+
+        // Add confetti effect
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 },
+        });
+      });
+
+      // Main product detail logic
+      function renderProductDetail() {
+        const user = JSON.parse(localStorage.getItem("currentUser"));
+        if (!user) {
+          alert("Bạn cần đăng nhập để xem chi tiết sản phẩm!");
+          window.location.href = "login.html";
+          return;
+        }
+
+        const params = new URLSearchParams(window.location.search);
+        const id = parseInt(params.get("id"));
+        const pet = petsData.find((p) => p.id === id);
+        const container = document.getElementById("detailContent");
+
+        if (!pet) {
+          container.innerHTML = `
+            <div class="error-message">
+              <h2>Không tìm thấy sản phẩm!</h2>
+              <p>Sản phẩm bạn đang tìm kiếm không tồn tại.</p>
+              <a href="webThuCung.html" class="btn">Quay về trang chủ</a>
+            </div>
+          `;
+        } else {
+          container.innerHTML = `
+            <div class="product-detail-grid">
+              <div class="product-image-column">
+                <img src="${pet.image}" class="product-detail-image" alt="${
+            pet.name
+          }" />
+              </div>
+              <div class="product-info-column">
+                <h1 class="product-title">${pet.name}</h1>
+                <div class="product-rating">
+                  <span class="rating">${pet.reviews.rating.toFixed(1)}</span>
+                  <span class="stars">${"★".repeat(
+                    Math.round(pet.reviews.rating)
+                  )}${"☆".repeat(5 - Math.round(pet.reviews.rating))}</span>
+                  <span class="review-count">(${
+                    pet.reviews.count
+                  } đánh giá)</span>
+                </div>
+                <div class="product-price">$${pet.price.toLocaleString(
+                  "vi-VN"
+                )}</div>
+                <div class="product-details">
+                  <div class="detail-item">
+                    <strong>Giống:</strong> ${pet.breed}
+                  </div>
+                  <div class="detail-item">
+                    <strong>Tuổi:</strong> ${pet.age}
+                  </div>
+                  <div class="detail-item">
+                    <strong>Giới tính:</strong> ${pet.gender}
+                  </div>
+                  <div class="detail-item">
+                    <strong>Đã tiêm phòng:</strong> ${
+                      pet.vaccinated ? "✅ Có" : "❌ Chưa"
+                    }
+                  </div>
+                </div>
+                <div class="product-description">
+                  <h3>Mô tả</h3>
+                  <p>${pet.description}</p>
+                </div>
+                <div class="product-actions">
+                  <button id="addToCartBtn" class="btn add-to-cart-btn">Thêm vào giỏ hàng</button>
+                  <a href="webThuCung.html" class="btn secondary-btn">Tiếp tục mua sắm</a>
+                </div>
+              </div>
+            </div>
+          `;
+
+          // Add to cart functionality
+          document
+            .getElementById("addToCartBtn")
+            .addEventListener("click", () => {
+              let cart = JSON.parse(localStorage.getItem("cart")) || [];
+              const existing = cart.find((item) => item.id === pet.id);
+
+              if (existing) {
+                existing.quantity += 1;
+              } else {
+                cart.push({ ...pet, quantity: 1 });
+              }
+
+              localStorage.setItem("cart", JSON.stringify(cart));
+              updateCartCount();
+              alert("Đã thêm vào giỏ hàng!");
+            });
+        }
+      }
+
+      // Initialize
+      updateAuthState();
+      updateCartCount();
+      renderProductDetail();
     </script>
   </body>
 </html>
