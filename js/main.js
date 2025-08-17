@@ -50,6 +50,7 @@ function addToCart(id) {
   const registerModal = document.getElementById("registerModal");
   const loginModal = document.getElementById("loginModal");
   const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+
   if (!currentUser) {
     alert("Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng");
     loginModal.style.display = "block";

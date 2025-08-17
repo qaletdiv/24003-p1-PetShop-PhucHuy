@@ -41,9 +41,15 @@ function loadCart() {
 const cartModal = document.getElementById("cartModal");
 const cartLink = document.getElementById("cart-link");
 const closeModalBtn = document.querySelector(".close");
+const currentUser = JSON.parse(localStorage.getItem("currentUser"));
 if (cartLink && cartModal && closeModalBtn) {
   cartLink.addEventListener("click", (e) => {
     e.preventDefault();
+    if (!currentUser) {
+      alert("Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng");
+      loginModal.style.display = "block";
+      return;
+    }
     cartModal.style.display = "block";
     loadCart();
   });
