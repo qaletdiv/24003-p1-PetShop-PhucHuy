@@ -16,33 +16,33 @@ export function register() {
   const confirmPassword = document.getElementById(
     "registerConfirmPassword"
   ).value;
+  
   if (!userName || !email || !password || !confirmPassword) {
-    alert("Please fill in all fields!");
-    alert("làm ơn điền đầy đủ thông tin!");
+    alert("Làm ơn điền đầy đủ thông tin!");
     return;
   }
 
   if (password !== confirmPassword) {
-    alert("Passwords do not match!");
+    alert("Mật khẩu xác nhận không khớp!");
     return;
   }
 
   if (email.indexOf("@") === -1 || email.indexOf(".") === -1) {
-    alert("Invalid email format!");
     alert("Định dạng email không hợp lệ!");
     return;
   }
+  
   const avatar = "https://i.pravatar.cc/40?u=" + email;
 
   const users = getUsers();
   if (users.find((u) => u.email === email)) {
-    alert("Email already exists!");
+    alert("Email đã tồn tại!");
     return;
   }
 
   const user = { userName, email, password, avatar };
   saveUsers(user);
-  alert("Registration successful!");
+  alert("Đăng ký thành công!");
   window.location.href = "login.html";
 }
 
@@ -51,20 +51,21 @@ export function login() {
   const email = document.getElementById("loginEmail").value;
   const password = document.getElementById("loginPassword").value;
 
-  const users = getUsers();
-  const user = users.find((u) => u.email === email && u.password === password);
   if (!email || !password) {
-    alert("Please fill in all fields!");
-    alert("làm ơn điền đầy đủ thông tin!");
+    alert("Làm ơn điền đầy đủ thông tin!");
     return;
   }
+  
   if (email.indexOf("@") === -1 || email.indexOf(".") === -1) {
-    alert("Invalid email format!");
     alert("Định dạng email không hợp lệ!");
     return;
   }
+
+  const users = getUsers();
+  const user = users.find((u) => u.email === email && u.password === password);
+  
   if (!user) {
-    alert("Invalid credentials");
+    alert("Thông tin đăng nhập không chính xác!");
     return;
   }
 

@@ -15,14 +15,13 @@ function renderProducts(data) {
       <p>Giống: ${pet.breed}</p>
       <p>Tuổi: ${pet.age}</p>
       <p>Giới tính: ${pet.gender}</p>
-      <p class="product-description">${pet.description}</p>
       <div class="star-rating">
         <span class="rating">${pet.reviews.rating.toFixed(1)}</span>
         <span class="stars">${"★".repeat(
           Math.round(pet.reviews.rating)
         )}${"☆".repeat(5 - Math.round(pet.reviews.rating))}</span>
+        <span class="review-count">(${pet.reviews.count})</span>
       </div>
-      <p class="product-reviews">(${pet.reviews.count} đánh giá)</p>
       <p class="product-price">$${pet.price}</p>
       <button class="add-to-cart" data-id="${pet.id}">Thêm vào giỏ</button>
     `;
@@ -91,8 +90,9 @@ function handleFilterChange() {
   });
 }
 
-// Initialize
-renderProducts(petsData);
+// Initialize - Show only 4 featured products on homepage
+const featuredProducts = petsData.slice(0, 4);
+renderProducts(featuredProducts);
 updateCartCount();
 handleFilterChange();
 /////////

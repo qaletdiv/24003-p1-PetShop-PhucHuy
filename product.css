@@ -1,9 +1,16 @@
 .product-card {
-  padding: 10px 10px;
+  padding: 15px;
   border: 1px solid #ddd;
   border-radius: 10px;
   overflow: hidden;
   transition: transform 0.3s, box-shadow 0.3s;
+  width: 280px;
+  height: 450px;
+  display: flex;
+  flex-direction: column;
+  margin: 10px;
+  background-color: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 .product-card:hover {
   transform: translateY(-5px);
@@ -28,6 +35,7 @@
   font-weight: bold;
   cursor: pointer;
   transition: background 0.3s;
+  margin-top: auto;
 }
 .add-to-cart:hover {
   background-color: #feb47b;
@@ -40,4 +48,88 @@
   font-size: 1.2rem;
   color: gold;
   text-align: left;
+}
+
+.product-price {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #ff6b6b;
+  margin: 10px 0;
+}
+
+.product-card p {
+  margin: 5px 0;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.rating {
+  font-weight: bold;
+  margin-right: 5px;
+}
+
+.stars {
+  color: gold;
+}
+
+.review-count {
+  font-size: 0.8rem;
+  color: #666;
+  margin-left: 5px;
+}
+
+/* Product Grid Layout */
+.product-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 20px;
+  padding: 20px;
+}
+
+/* Pagination Styles */
+#pagination {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 30px 0;
+}
+
+#pagination button {
+  padding: 10px 15px;
+  border: 1px solid #ddd;
+  background-color: white;
+  color: var(--primary-color);
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s;
+}
+
+#pagination button:hover {
+  background-color: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
+
+#pagination button.active {
+  background-color: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .product-card {
+    width: 100%;
+    max-width: 300px;
+    height: auto;
+    min-height: 400px;
+  }
+
+  .product-grid {
+    padding: 10px;
+    gap: 15px;
+  }
 }

@@ -18,10 +18,21 @@
       <nav class="nav">
         <ul class="nav-list">
           <li><a href="webThuCung.html">Home</a></li>
-          <li>
-            <a href="cart.html">Cart(<span id="cart-count">0</span>)</a>
+          <li><a href="product.html">Product</a></li>
+          <li><a href="#con">Contact</a></li>
+          <li id="auth-links" class="fasUsers">
+            <a href="login.html" id="login-link">Login</a>
+            <a href="register.html" id="register-link">Register</a>
           </li>
-          <li><a href="account.html">My Account</a></li>
+          <li id="account-link" style="display: none">
+            <a href="account.html">My Account</a>
+            <a href="#" id="logout-link">Logout</a>
+          </li>
+          <li>
+            <a href="cart.html" id="cart-link"
+              >Cart(<span id="cart-count">0</span>)</a
+            >
+          </li>
         </ul>
       </nav>
     </header>
@@ -56,7 +67,7 @@
       const filterBtn = document.getElementById("filterPrice");
 
       let currentPage = 1;
-      const perPage = 4;
+      const perPage = 6;
 
       function applyFilters(data) {
         const search = document
@@ -97,7 +108,7 @@
             currentPage = i;
             render();
           };
-          if (i === currentPage) btn.style.background = "#4ecdc4";
+          if (i === currentPage) btn.classList.add("active");
           paginationEl.appendChild(btn);
         }
       }
@@ -112,15 +123,32 @@
         sliced.forEach((pet) => {
           const div = document.createElement("div");
           div.className = "pet-card";
+          div.style.cursor = "pointer";
           div.innerHTML = `
-          <img src="${pet.image}" alt="${pet.name}" />
-          <div class="pet-info">
-            <h3>${pet.name}</h3>
-            <p>${pet.description}</p>
-            <p class="pet-price">$${pet.price}</p>
-            <a class="btn add-to-cart" href="product-detail.html?id=${pet.id}">Xem chi tiết</a>
+          <img src="${pet.image}" alt="${pet.name}" class="product-image" />
+          <h3 class="product-name">${pet.name}</h3>
+          <p>Giống: ${pet.breed}</p>
+          <p>Tuổi: ${pet.age}</p>
+          <p>Giới tính: ${pet.gender}</p>
+          <div class="star-rating">
+            <span class="rating">${pet.reviews.rating.toFixed(1)}</span>
+            <span class="stars">${"★".repeat(
+              Math.round(pet.reviews.rating)
+            )}${"☆".repeat(5 - Math.round(pet.reviews.rating))}</span>
           </div>
+          <p class="product-price">$${pet.price}</p>
+          <button class="add-to-cart" onclick="event.stopPropagation(); addToCart(${
+            pet.id
+          })">Thêm vào giỏ</button>
         `;
+
+          // Add click event to navigate to product detail
+          div.addEventListener("click", (e) => {
+            if (!e.target.classList.contains("add-to-cart")) {
+              window.location.href = `productDetail.html?id=${pet.id}`;
+            }
+          });
+
           listEl.appendChild(div);
         });
 
@@ -136,6 +164,67 @@
       sortEl.addEventListener("change", () => render());
       filterBtn.addEventListener("click", () => render());
 
+      // Authentication state management
+      function updateAuthState() {
+        const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+        const authLinks = document.getElementById("auth-links");
+        const accountLink = document.getElementById("account-link");
+        const logoutLink = document.getElementById("logout-link");
+
+        if (currentUser) {
+          authLinks.style.display = "none";
+          accountLink.style.display = "block";
+          accountLink.querySelector(
+            "a"
+          ).textContent = `Hi, ${currentUser.userName}`;
+        } else {
+          authLinks.style.display = "block";
+          accountLink.style.display = "none";
+        }
+
+        // Logout functionality
+        logoutLink?.addEventListener("click", (e) => {
+          e.preventDefault();
+          localStorage.removeItem("currentUser");
+          localStorage.removeItem("cart");
+          window.location.href = "webThuCung.html";
+        });
+      }
+
+      // Cart count update
+      function updateCartCount() {
+        const cart = JSON.parse(localStorage.getItem("cart")) || [];
+        const total = cart.reduce((sum, item) => sum + item.quantity, 0);
+        const countEl = document.getElementById("cart-count");
+        if (countEl) countEl.textContent = total;
+      }
+
+      // Add to cart function
+      function addToCart(id) {
+        const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+        if (!currentUser) {
+          alert("Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng");
+          window.location.href = "login.html";
+          return;
+        }
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+        const existingItem = cart.find((item) => item.id === id);
+
+        if (existingItem) {
+          existingItem.quantity += 1;
+        } else {
+          const pet = petsData.find((p) => p.id === id);
+          cart.push({ ...pet, quantity: 1 });
+        }
+
+        localStorage.setItem("cart", JSON.stringify(cart));
+        updateCartCount();
+        alert("Đã thêm vào giỏ hàng!");
+      }
+
+      // Initialize
+      updateAuthState();
+      updateCartCount();
       render();
     </script>
   </body>

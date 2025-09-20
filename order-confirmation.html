@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Xác nhận đơn hàng - Pet Store</title>
+    <link rel="stylesheet" href="webThuCung.css" />
+    <link rel="stylesheet" href="product.css" />
+  </head>
+  <body>
+    <header class="header-1">
+      <div class="logo">
+        <a href="webThuCung.html">
+          <img src="images/logo.avif" alt="logo" />
+        </a>
+      </div>
+      <form action="#" method="get" class="search-form" id="search-form">
+        <input
+          type="text"
+          name="search"
+          placeholder="Search pets..."
+          id="search-input"
+        />
+        <button class="button" type="submit">Search</button>
+      </form>
+      <nav class="nav">
+        <ul class="nav-list">
+          <li><a href="webThuCung.html">Home</a></li>
+          <li><a href="product.html">Product</a></li>
+          <li><a href="#con">Contact</a></li>
+          <li id="auth-links" class="fasUsers">
+            <a href="login.html" id="login-link">Login</a>
+            <a href="register.html" id="register-link">Register</a>
+          </li>
+          <li id="account-link" style="display: none">
+            <a href="account.html">My Account</a>
+            <a href="#" id="logout-link">Logout</a>
+          </li>
+          <li>
+            <a href="cart.html" id="cart-link"
+              >Cart(<span id="cart-count">0</span>)</a
+            >
+          </li>
+        </ul>
+      </nav>
+    </header>
+
+    <main class="confirmation-container">
+      <div class="confirmation-content">
+        <div class="success-icon">
+          <div class="checkmark">✓</div>
+        </div>
+
+        <h1>Đặt hàng thành công!</h1>
+        <p class="confirmation-message">
+          Cảm ơn bạn đã mua hàng tại Pet Store. Đơn hàng của bạn đã được xác
+          nhận và sẽ được xử lý trong thời gian sớm nhất.
+        </p>
+
+        <div class="order-details" id="orderDetails">
+          <!-- Order details will be loaded here -->
+        </div>
+
+        <div class="confirmation-actions">
+          <a href="product.html" class="btn primary-btn">Tiếp tục mua sắm</a>
+          <a href="account.html" class="btn secondary-btn">Xem đơn hàng</a>
+        </div>
+
+        <div class="contact-info">
+          <h3>Thông tin liên hệ</h3>
+          <p>Nếu bạn có bất kỳ câu hỏi nào về đơn hàng, vui lòng liên hệ:</p>
+          <div class="contact-details">
+            <p>📞 Hotline: 0123-456-789</p>
+            <p>📧 Email: support@petstore.com</p>
+            <p>🕒 Giờ làm việc: 8:00 - 22:00 (Thứ 2 - Chủ nhật)</p>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script type="module">
+      import confetti from "https://cdn.skypack.dev/canvas-confetti";
+
+      // Authentication state management
+      function updateAuthState() {
+        const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+        const authLinks = document.getElementById("auth-links");
+        const accountLink = document.getElementById("account-link");
+        const logoutLink = document.getElementById("logout-link");
+
+        if (currentUser) {
+          authLinks.style.display = "none";
+          accountLink.style.display = "block";
+          accountLink.querySelector(
+            "a"
+          ).textContent = `Hi, ${currentUser.userName}`;
+        } else {
+          authLinks.style.display = "block";
+          accountLink.style.display = "none";
+        }
+
+        // Logout functionality
+        logoutLink?.addEventListener("click", (e) => {
+          e.preventDefault();
+          localStorage.removeItem("currentUser");
+          localStorage.removeItem("cart");
+          window.location.href = "webThuCung.html";
+        });
+      }
+
+      // Cart count update
+      function updateCartCount() {
+        const cart = JSON.parse(localStorage.getItem("cart")) || [];
+        const total = cart.reduce((sum, item) => sum + item.quantity, 0);
+        const countEl = document.getElementById("cart-count");
+        if (countEl) countEl.textContent = total;
+      }
+
+      // Load order details
+      function loadOrderDetails() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const orderId = urlParams.get("orderId");
+
+        if (!orderId) {
+          alert("Không tìm thấy thông tin đơn hàng!");
+          window.location.href = "webThuCung.html";
+          return;
+        }
+
+        const orders = JSON.parse(localStorage.getItem("orders")) || [];
+        const order = orders.find((o) => o.id == orderId);
+
+        if (!order) {
+          alert("Không tìm thấy đơn hàng!");
+          window.location.href = "webThuCung.html";
+          return;
+        }
+
+        const orderDetailsEl = document.getElementById("orderDetails");
+        const orderDate = new Date(order.date).toLocaleDateString("vi-VN");
+
+        orderDetailsEl.innerHTML = `
+          <div class="order-info">
+            <h3>Thông tin đơn hàng</h3>
+            <div class="info-row">
+              <span>Mã đơn hàng:</span>
+              <span class="order-id">#${order.id}</span>
+            </div>
+            <div class="info-row">
+              <span>Ngày đặt:</span>
+              <span>${orderDate}</span>
+            </div>
+            <div class="info-row">
+              <span>Trạng thái:</span>
+              <span class="status pending">${getStatusText(order.status)}</span>
+            </div>
+            <div class="info-row">
+              <span>Tổng tiền:</span>
+              <span class="total-amount">$${order.total.toFixed(2)}</span>
+            </div>
+          </div>
+
+          <div class="customer-info">
+            <h3>Thông tin giao hàng</h3>
+            <div class="info-row">
+              <span>Họ tên:</span>
+              <span>${order.customer.firstName} ${
+          order.customer.lastName
+        }</span>
+            </div>
+            <div class="info-row">
+              <span>Email:</span>
+              <span>${order.customer.email}</span>
+            </div>
+            <div class="info-row">
+              <span>Số điện thoại:</span>
+              <span>${order.customer.phone}</span>
+            </div>
+            <div class="info-row">
+              <span>Địa chỉ:</span>
+              <span>${order.customer.address}, ${order.customer.city} ${
+          order.customer.zipCode
+        }</span>
+            </div>
+          </div>
+
+          <div class="order-items">
+            <h3>Sản phẩm đã đặt</h3>
+            <div class="items-list">
+              ${order.items
+                .map(
+                  (item) => `
+                <div class="order-item">
+                  <img src="${item.image}" alt="${item.name}" />
+                  <div class="item-info">
+                    <h4>${item.name}</h4>
+                    <p>Giống: ${item.breed}</p>
+                    <p>Số lượng: ${item.quantity}</p>
+                  </div>
+                  <div class="item-price">$${(
+                    item.price * item.quantity
+                  ).toFixed(2)}</div>
+                </div>
+              `
+                )
+                .join("")}
+            </div>
+          </div>
+        `;
+
+        // Trigger confetti effect
+        setTimeout(() => {
+          confetti({
+            particleCount: 100,
+            spread: 70,
+            origin: { y: 0.6 },
+          });
+        }, 500);
+      }
+
+      function getStatusText(status) {
+        const statusMap = {
+          pending: "Chờ xử lý",
+          processing: "Đang xử lý",
+          shipped: "Đã gửi hàng",
+          delivered: "Đã giao hàng",
+          cancelled: "Đã hủy",
+        };
+        return statusMap[status] || status;
+      }
+
+      // Initialize
+      updateAuthState();
+      updateCartCount();
+      loadOrderDetails();
+    </script>
+
+    <style>
+      .confirmation-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem;
+        text-align: center;
+      }
+
+      .confirmation-content {
+        background: white;
+        padding: 3rem;
+        border-radius: 15px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+      }
+
+      .success-icon {
+        margin-bottom: 2rem;
+      }
+
+      .checkmark {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background-color: var(--secondary-color);
+        color: white;
+        font-size: 3rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+        animation: bounce 0.6s ease-in-out;
+      }
+
+      @keyframes bounce {
+        0%,
+        20%,
+        50%,
+        80%,
+        100% {
+          transform: translateY(0);
+        }
+        40% {
+          transform: translateY(-10px);
+        }
+        60% {
+          transform: translateY(-5px);
+        }
+      }
+
+      .confirmation-content h1 {
+        color: var(--primary-color);
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+      }
+
+      .confirmation-message {
+        font-size: 1.2rem;
+        color: #666;
+        margin-bottom: 2rem;
+        line-height: 1.6;
+      }
+
+      .order-details {
+        text-align: left;
+        margin: 2rem 0;
+        padding: 2rem;
+        background-color: #f9f9f9;
+        border-radius: 10px;
+      }
+
+      .order-details h3 {
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+        font-size: 1.3rem;
+      }
+
+      .info-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.8rem;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #eee;
+      }
+
+      .info-row:last-child {
+        border-bottom: none;
+      }
+
+      .info-row span:first-child {
+        font-weight: bold;
+        color: var(--dark-color);
+      }
+
+      .order-id {
+        font-family: monospace;
+        background-color: var(--accent-color);
+        color: white;
+        padding: 0.2rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.9rem;
+      }
+
+      .status {
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: bold;
+      }
+
+      .status.pending {
+        background-color: #ffa726;
+        color: white;
+      }
+
+      .total-amount {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: var(--accent-color);
+      }
+
+      .order-items {
+        margin-top: 2rem;
+      }
+
+      .items-list {
+        margin-top: 1rem;
+      }
+
+      .order-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        background: white;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .order-item img {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 8px;
+      }
+
+      .item-info h4 {
+        margin-bottom: 0.5rem;
+        color: var(--dark-color);
+      }
+
+      .item-info p {
+        font-size: 0.9rem;
+        color: #666;
+        margin: 0.2rem 0;
+      }
+
+      .item-price {
+        font-weight: bold;
+        color: var(--accent-color);
+        font-size: 1.1rem;
+      }
+
+      .confirmation-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin: 2rem 0;
+      }
+
+      .primary-btn {
+        background-color: var(--primary-color);
+        color: white;
+        text-decoration: none;
+        padding: 1rem 2rem;
+        border-radius: 8px;
+        font-size: 1.1rem;
+        font-weight: bold;
+        transition: background-color 0.3s;
+      }
+
+      .primary-btn:hover {
+        background-color: #e05555;
+      }
+
+      .secondary-btn {
+        background-color: var(--secondary-color);
+        color: white;
+        text-decoration: none;
+        padding: 1rem 2rem;
+        border-radius: 8px;
+        font-size: 1.1rem;
+        font-weight: bold;
+        transition: background-color 0.3s;
+      }
+
+      .secondary-btn:hover {
+        background-color: #3cbcb0;
+      }
+
+      .contact-info {
+        margin-top: 3rem;
+        padding-top: 2rem;
+        border-top: 2px solid #eee;
+      }
+
+      .contact-info h3 {
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+      }
+
+      .contact-details {
+        text-align: left;
+        max-width: 400px;
+        margin: 0 auto;
+      }
+
+      .contact-details p {
+        margin: 0.5rem 0;
+        font-size: 1rem;
+      }
+
+      @media (max-width: 768px) {
+        .confirmation-content {
+          padding: 2rem 1rem;
+        }
+
+        .confirmation-actions {
+          flex-direction: column;
+        }
+
+        .order-item {
+          flex-direction: column;
+          text-align: center;
+        }
+      }
+    </style>
+  </body>
+</html>
