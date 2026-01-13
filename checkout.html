@@ -340,28 +340,17 @@
           const orderData = Object.fromEntries(formData);
           const cart = JSON.parse(localStorage.getItem("cart")) || [];
 
-          // Create order
-          const order = {
-            id: Date.now(),
-            date: new Date().toISOString(),
-            customer: orderData,
-            items: cart,
-            status: "pending",
-            total: parseFloat(
-              document.getElementById("total").textContent.replace("$", "")
-            ),
-          };
+          if (cart.length === 0) {
+            alert("Giỏ hàng của bạn đang trống!");
+            window.location.href = "cart.html";
+            return;
+          }
 
-          // Save order to localStorage
-          const orders = JSON.parse(localStorage.getItem("orders")) || [];
-          orders.push(order);
-          localStorage.setItem("orders", JSON.stringify(orders));
+          // Save checkout data to localStorage for payment page
+          localStorage.setItem("checkoutData", JSON.stringify(orderData));
 
-          // Clear cart
-          localStorage.removeItem("cart");
-
-          // Redirect to confirmation page
-          window.location.href = `order-confirmation.html?orderId=${order.id}`;
+          // Redirect to payment page
+          window.location.href = "paymentPage.html";
         });
 
       // Payment method change handler
@@ -655,3 +644,4 @@
     </style>
   </body>
 </html>
+

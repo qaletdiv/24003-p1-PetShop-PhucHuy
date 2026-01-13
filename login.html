@@ -28,7 +28,19 @@
             <a href="register.html">Register</a>
           </li>
           <li>
-            <a href="cart.html">Cart(<span id="cart-count">0</span>)</a>
+            <a href="#" id="cart-link-login"
+              >Cart(<span id="cart-count">0</span>)</a
+            >
+            <script>
+              document
+                .getElementById("cart-link-login")
+                .addEventListener("click", function (e) {
+                  e.preventDefault();
+                  alert(
+                    "Vui lòng đăng nhập và điền đầy đủ thông tin để xem giỏ hàng.\nChưa có tài khoản? Vui lòng Đăng ký tại trang Đăng ký."
+                  );
+                });
+            </script>
           </li>
         </ul>
       </nav>
@@ -52,12 +64,12 @@
       </div>
     </main>
 
-    <!-- Các script nếu cần -->
     <!-- <script type="module" src="js/auth.js"></script> -->
     <!-- Inside <script> block at end -->
     <script type="module">
       import { login } from "./js/auth.js";
       document.getElementById("btn-login").addEventListener("click", login);
     </script>
+    <script src="js/search.js"></script>
   </body>
 </html>

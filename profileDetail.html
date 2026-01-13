@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chi tiết hồ sơ - Pet Store</title>
+    <link rel="stylesheet" href="webThuCung.css" />
+    <link rel="stylesheet" href="product.css" />
+    <link rel="stylesheet" href="profileDetail.css" />
+  </head>
+  <body>
+    <header class="header-1">
+      <div class="logo">
+        <a href="webThuCung.html">
+          <img src="images/logo.avif" alt="logo" />
+        </a>
+      </div>
+      <form action="#" method="get" class="search-form" id="search-form">
+        <input
+          type="text"
+          name="search"
+          placeholder="Search pets..."
+          id="search-input"
+        />
+        <button class="button" type="submit">Search</button>
+      </form>
+      <nav class="nav">
+        <ul class="nav-list">
+          <li><a href="webThuCung.html">Home</a></li>
+          <li><a href="product.html">Product</a></li>
+          <li><a href="#con">Contact</a></li>
+          <li id="auth-links" class="fasUsers">
+            <a href="login.html" id="login-link">Login</a>
+            <a href="register.html" id="register-link">Register</a>
+          </li>
+          <li id="account-link" style="display: none">
+            <a href="account.html">My Account</a>
+            <a href="#" id="logout-link">Logout</a>
+          </li>
+          <li>
+            <a href="cart.html" id="cart-link"
+              >Cart(<span id="cart-count">0</span>)</a
+            >
+          </li>
+        </ul>
+      </nav>
+    </header>
+
+    <main class="profile-detail-container">
+      <div id="profileContent">
+        <div class="loading">Loading...</div>
+      </div>
+    </main>
+
+    <script type="module">
+      import { petsData } from "./js/mock-data.js";
+
+      // Authentication state management
+      function updateAuthState() {
+        const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+        const authLinks = document.getElementById("auth-links");
+        const accountLink = document.getElementById("account-link");
+        const logoutLink = document.getElementById("logout-link");
+
+        if (currentUser) {
+          authLinks.style.display = "none";
+          accountLink.style.display = "block";
+          accountLink.querySelector(
+            "a"
+          ).textContent = `Hi, ${currentUser.userName}`;
+        } else {
+          authLinks.style.display = "block";
+          accountLink.style.display = "none";
+          // Redirect to login if not authenticated
+          window.location.href = "login.html";
+        }
+
+        // Logout functionality
+        logoutLink?.addEventListener("click", (e) => {
+          e.preventDefault();
+          localStorage.removeItem("currentUser");
+          localStorage.removeItem("cart");
+          window.location.href = "webThuCung.html";
+        });
+      }
+
+      // Cart count update
+      function updateCartCount() {
+        const cart = JSON.parse(localStorage.getItem("cart")) || [];
+        const total = cart.reduce((sum, item) => sum + item.quantity, 0);
+        const countEl = document.getElementById("cart-count");
+        if (countEl) countEl.textContent = total;
+      }
+
+      // Load profile detail
+      function loadProfileDetail() {
+        const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+        const container = document.getElementById("profileContent");
+
+        if (!currentUser) {
+          container.innerHTML = `
+            <div class="error-message">
+              <h2>Bạn cần đăng nhập để xem hồ sơ!</h2>
+              <a href="login.html" class="btn btn-primary">Đăng nhập</a>
+            </div>
+          `;
+          return;
+        }
+
+        // Get user statistics
+        const orders = JSON.parse(localStorage.getItem("orders")) || [];
+        const userOrders = orders.filter(
+          (order) => order.customer?.email === currentUser.email
+        );
+        const totalSpent = userOrders.reduce(
+          (sum, order) => sum + (order.total || 0),
+          0
+        );
+        const favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+        const allReviews =
+          JSON.parse(localStorage.getItem("productReviews")) || {};
+        let totalReviews = 0;
+        Object.values(allReviews).forEach((reviews) => {
+          totalReviews += reviews.filter(
+            (r) => r.userName === currentUser.userName
+          ).length;
+        });
+
+        const userName = currentUser.userName || "Người dùng";
+        const userInitial = userName.charAt(0).toUpperCase();
+        const userAvatar = currentUser.avatar || "";
+        const userEmail = currentUser.email || "Chưa có email";
+        const userPhone = currentUser.phone || "Chưa cập nhật";
+        const userAddress = currentUser.address || "Chưa cập nhật";
+        const userCity = currentUser.city || "Chưa cập nhật";
+        const userZipCode = currentUser.zipCode || "Chưa cập nhật";
+
+        container.innerHTML = `
+          <div class="profile-header">
+            <div class="profile-avatar-section">
+              <div class="profile-avatar-wrapper">
+                ${
+                  userAvatar
+                    ? `<img src="${userAvatar}" alt="Avatar" class="profile-avatar-large profile-avatar-image" id="profileAvatarImg" />`
+                    : `<div class="profile-avatar-large" id="profileAvatarText">${userInitial}</div>`
+                }
+                <div class="avatar-edit-overlay">
+                  <label for="avatarInput" class="avatar-edit-btn" title="Đổi avatar">
+                    <span class="edit-icon">📷</span>
+                    <span class="edit-text">Đổi</span>
+                  </label>
+                  <input type="file" id="avatarInput" accept="image/*" style="display: none;" />
+                </div>
+              </div>
+            </div>
+            <h1 class="profile-name">${userName}</h1>
+            <p class="profile-email">${userEmail}</p>
+            <div class="profile-meta">
+              <div class="meta-item">
+                <span class="meta-value">${userOrders.length}</span>
+                <span class="meta-label">Đơn hàng</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-value">${favorites.length}</span>
+                <span class="meta-label">Yêu thích</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-value">${totalReviews}</span>
+                <span class="meta-label">Đánh giá</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="profile-content">
+            <div class="profile-sidebar">
+              <ul class="sidebar-menu">
+                <li>
+                  <a href="#info" class="active" data-section="info">Thông tin cá nhân</a>
+                </li>
+                <li>
+                  <a href="#stats" data-section="stats">Thống kê</a>
+                </li>
+                <li>
+                  <a href="account.html">Quay lại tài khoản</a>
+                </li>
+              </ul>
+            </div>
+
+            <div class="profile-main">
+              <div id="info" class="profile-section active">
+                <h2 class="section-title">Thông tin cá nhân</h2>
+                <div class="info-grid">
+                  <div class="info-card">
+                    <div class="info-row">
+                      <span class="info-label">Tên đăng nhập:</span>
+                      <span class="info-value">${userName}</span>
+                    </div>
+                    <div class="info-row">
+                      <span class="info-label">Email:</span>
+                      <span class="info-value">${userEmail}</span>
+                    </div>
+                    <div class="info-row">
+                      <span class="info-label">Số điện thoại:</span>
+                      <span class="info-value">${userPhone}</span>
+                    </div>
+                  </div>
+
+                  <div class="info-card">
+                    <div class="info-row">
+                      <span class="info-label">Địa chỉ:</span>
+                      <span class="info-value">${userAddress}</span>
+                    </div>
+                    <div class="info-row">
+                      <span class="info-label">Thành phố:</span>
+                      <span class="info-value">${userCity}</span>
+                    </div>
+                    <div class="info-row">
+                      <span class="info-label">Mã bưu điện:</span>
+                      <span class="info-value">${userZipCode}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="btn-group">
+                  <a href="account.html" class="btn btn-primary">Chỉnh sửa thông tin</a>
+                  <a href="product.html" class="btn btn-secondary">Mua sắm ngay</a>
+                </div>
+              </div>
+
+              <div id="stats" class="profile-section" style="display: none;">
+                <h2 class="section-title">Thống kê hoạt động</h2>
+                <div class="stats-grid">
+                  <div class="stat-card">
+                    <div class="stat-value">${userOrders.length}</div>
+                    <div class="stat-label">Tổng đơn hàng</div>
+                  </div>
+                  <div class="stat-card secondary">
+                    <div class="stat-value">$${totalSpent.toLocaleString(
+                      "vi-VN"
+                    )}</div>
+                    <div class="stat-label">Tổng chi tiêu</div>
+                  </div>
+                  <div class="stat-card">
+                    <div class="stat-value">${favorites.length}</div>
+                    <div class="stat-label">Sản phẩm yêu thích</div>
+                  </div>
+                  <div class="stat-card secondary">
+                    <div class="stat-value">${totalReviews}</div>
+                    <div class="stat-label">Đánh giá đã viết</div>
+                  </div>
+                </div>
+
+                ${
+                  userOrders.length > 0
+                    ? `
+                  <h3 style="margin-top: 2rem; color: var(--dark-color);">Đơn hàng gần đây</h3>
+                  <div class="info-grid" style="margin-top: 1rem;">
+                    ${userOrders
+                      .slice(0, 3)
+                      .map(
+                        (order) => `
+                      <div class="info-card">
+                        <div class="info-row">
+                          <span class="info-label">Đơn hàng #${order.id}</span>
+                          <span class="info-value">$${
+                            order.total?.toFixed(2) || "0.00"
+                          }</span>
+                        </div>
+                        <div class="info-row">
+                          <span class="info-label">Ngày đặt:</span>
+                          <span class="info-value">${new Date(
+                            order.date
+                          ).toLocaleDateString("vi-VN")}</span>
+                        </div>
+                        <div class="info-row">
+                          <span class="info-label">Trạng thái:</span>
+                          <span class="info-value">${getStatusText(
+                            order.status
+                          )}</span>
+                        </div>
+                      </div>
+                    `
+                      )
+                      .join("")}
+                  </div>
+                `
+                    : `
+                  <div class="empty-state">
+                    <h3>Chưa có đơn hàng nào</h3>
+                    <p>Bắt đầu mua sắm để xem thống kê của bạn!</p>
+                    <a href="product.html" class="btn btn-primary" style="margin-top: 1rem;">Mua sắm ngay</a>
+                  </div>
+                `
+                }
+              </div>
+            </div>
+          </div>
+        `;
+
+        // Setup navigation
+        setupNavigation();
+
+        // Setup avatar upload
+        setupAvatarUpload();
+      }
+
+      function setupAvatarUpload() {
+        const avatarInput = document.getElementById("avatarInput");
+        const avatarImg = document.getElementById("profileAvatarImg");
+        const avatarText = document.getElementById("profileAvatarText");
+
+        if (!avatarInput) return;
+
+        avatarInput.addEventListener("change", (e) => {
+          const file = e.target.files[0];
+          if (!file) return;
+
+          // Validate file type
+          if (!file.type.startsWith("image/")) {
+            alert("Vui lòng chọn file ảnh!");
+            return;
+          }
+
+          // Validate file size (max 5MB)
+          if (file.size > 5 * 1024 * 1024) {
+            alert("Kích thước ảnh không được vượt quá 5MB!");
+            return;
+          }
+
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            const imageDataUrl = event.target.result;
+
+            // Update current user avatar
+            const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+            if (currentUser) {
+              currentUser.avatar = imageDataUrl;
+              localStorage.setItem("currentUser", JSON.stringify(currentUser));
+
+              // Update in users array
+              const users = JSON.parse(localStorage.getItem("users")) || [];
+              const userIndex = users.findIndex(
+                (u) => u.email === currentUser.email
+              );
+              if (userIndex !== -1) {
+                users[userIndex].avatar = imageDataUrl;
+                localStorage.setItem("users", JSON.stringify(users));
+              }
+
+              // Update display
+              if (avatarImg) {
+                avatarImg.src = imageDataUrl;
+              } else if (avatarText) {
+                // Replace text with image
+                const avatarWrapper = avatarText.parentElement;
+                avatarWrapper.innerHTML = `
+                  <img src="${imageDataUrl}" alt="Avatar" class="profile-avatar-large profile-avatar-image" id="profileAvatarImg" />
+                  <div class="avatar-edit-overlay">
+                    <label for="avatarInput" class="avatar-edit-btn" title="Đổi avatar">
+                      <span class="edit-icon">📷</span>
+                      <span class="edit-text">Đổi</span>
+                    </label>
+                    <input type="file" id="avatarInput" accept="image/*" style="display: none;" />
+                  </div>
+                `;
+                // Re-setup event listener
+                setupAvatarUpload();
+              }
+
+              // Reload page to show updated avatar everywhere
+              setTimeout(() => {
+                location.reload();
+              }, 500);
+
+              alert("Đã cập nhật avatar thành công!");
+
+              // Update avatar in header if exists
+              const headerAvatar = document.querySelector("#account-link img");
+              if (headerAvatar) {
+                headerAvatar.src = imageDataUrl;
+              }
+            }
+          };
+
+          reader.readAsDataURL(file);
+        });
+      }
+
+      function getStatusText(status) {
+        const statusMap = {
+          pending: "Chờ xử lý",
+          processing: "Đang xử lý",
+          shipped: "Đã gửi hàng",
+          delivered: "Đã giao hàng",
+          cancelled: "Đã hủy",
+        };
+        return statusMap[status] || status;
+      }
+
+      function setupNavigation() {
+        const navLinks = document.querySelectorAll(
+          ".sidebar-menu a[data-section]"
+        );
+        const sections = document.querySelectorAll(".profile-section");
+
+        navLinks.forEach((link) => {
+          link.addEventListener("click", (e) => {
+            e.preventDefault();
+            const targetSection = link.dataset.section;
+
+            // Update active nav link
+            navLinks.forEach((nl) => nl.classList.remove("active"));
+            link.classList.add("active");
+
+            // Show target section
+            sections.forEach((section) => {
+              section.style.display = "none";
+            });
+            const target = document.getElementById(targetSection);
+            if (target) {
+              target.style.display = "block";
+            }
+          });
+        });
+      }
+
+      // Initialize
+      updateAuthState();
+      updateCartCount();
+      loadProfileDetail();
+    </script>
+    <script src="js/search.js"></script>
+  </body>
+</html>

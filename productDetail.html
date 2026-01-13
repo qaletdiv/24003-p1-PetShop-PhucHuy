@@ -6,6 +6,7 @@
     <title>Chi tiết sản phẩm - Pet Store</title>
     <link rel="stylesheet" href="webThuCung.css" />
     <link rel="stylesheet" href="product.css" />
+    <link rel="stylesheet" href="ProductDetail.css" />
   </head>
   <body>
     <header class="header-1">
@@ -192,6 +193,24 @@
         });
       });
 
+      // Helper functions for reviews
+      function generateStarRating(rating) {
+        const fullStars = Math.floor(rating);
+        const hasHalfStar = rating % 1 >= 0.5;
+        let stars = "★".repeat(fullStars);
+        if (hasHalfStar && fullStars < 5) {
+          stars += "☆";
+        }
+        stars += "☆".repeat(5 - fullStars - (hasHalfStar ? 1 : 0));
+        return stars;
+      }
+
+      function calculateAverageRating(reviews, defaultRating) {
+        if (reviews.length === 0) return defaultRating;
+        const sum = reviews.reduce((acc, review) => acc + review.rating, 0);
+        return sum / reviews.length;
+      }
+
       // Main product detail logic
       function renderProductDetail() {
         const user = JSON.parse(localStorage.getItem("currentUser"));
@@ -215,50 +234,151 @@
             </div>
           `;
         } else {
+          // Load reviews for this product
+          const allReviews =
+            JSON.parse(localStorage.getItem("productReviews")) || {};
+          const productReviews = allReviews[id] || [];
+          const avgRating = calculateAverageRating(
+            productReviews,
+            pet.reviews.rating
+          );
+          const reviewCount = productReviews.length || pet.reviews.count;
+
           container.innerHTML = `
-            <div class="product-detail-grid">
-              <div class="product-image-column">
-                <img src="${pet.image}" class="product-detail-image" alt="${
+            <div class="product-detail-wrapper">
+              <div class="product-detail-grid">
+                <div class="product-image-column">
+                  <div class="image-container">
+                    <img src="${pet.image}" class="product-detail-image" alt="${
             pet.name
           }" />
+                  </div>
+                </div>
+                <div class="product-info-column">
+                  <h1 class="product-title">${pet.name}</h1>
+                  <div class="product-rating-header">
+                    <div class="product-rating">
+                      <span class="rating-value">${avgRating.toFixed(1)}</span>
+                      <div class="stars-container">
+                        ${generateStarRating(avgRating)}
+                      </div>
+                      <span class="review-count">(${reviewCount} đánh giá)</span>
+                    </div>
+                  </div>
+                  <div class="product-price-section">
+                    <span class="product-price">$${pet.price.toLocaleString(
+                      "vi-VN"
+                    )}</span>
+                  </div>
+                  <div class="product-details-card">
+                    <h3 class="details-title">Thông tin chi tiết</h3>
+                    <div class="product-details">
+                      <div class="detail-item">
+                        <span class="detail-label">Giống:</span>
+                        <span class="detail-value">${pet.breed}</span>
+                      </div>
+                      <div class="detail-item">
+                        <span class="detail-label">Tuổi:</span>
+                        <span class="detail-value">${pet.age}</span>
+                      </div>
+                      <div class="detail-item">
+                        <span class="detail-label">Giới tính:</span>
+                        <span class="detail-value">${pet.gender}</span>
+                      </div>
+                      <div class="detail-item">
+                        <span class="detail-label">Đã tiêm phòng:</span>
+                        <span class="detail-value">${
+                          pet.vaccinated ? "✅ Có" : "❌ Chưa"
+                        }</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="product-description-card">
+                    <h3 class="description-title">Mô tả sản phẩm</h3>
+                    <p class="description-text">${pet.description}</p>
+                  </div>
+                  <div class="product-actions">
+                    <button id="addToCartBtn" class="btn add-to-cart-btn">
+                      <span class="btn-icon">🛒</span>
+                      Thêm vào giỏ hàng
+                    </button>
+                    <a href="webThuCung.html" class="btn secondary-btn">
+                      <span class="btn-icon">←</span>
+                      Tiếp tục mua sắm
+                    </a>
+                  </div>
+                </div>
               </div>
-              <div class="product-info-column">
-                <h1 class="product-title">${pet.name}</h1>
-                <div class="product-rating">
-                  <span class="rating">${pet.reviews.rating.toFixed(1)}</span>
-                  <span class="stars">${"★".repeat(
-                    Math.round(pet.reviews.rating)
-                  )}${"☆".repeat(5 - Math.round(pet.reviews.rating))}</span>
-                  <span class="review-count">(${
-                    pet.reviews.count
-                  } đánh giá)</span>
+
+              <!-- Reviews Section -->
+              <div class="reviews-section">
+                <div class="reviews-header">
+                  <h2 class="reviews-title">
+                    <span class="title-icon">⭐</span>
+                    Đánh giá sản phẩm
+                  </h2>
+                  <button id="writeReviewBtn" class="btn write-review-btn">
+                    Viết đánh giá
+                  </button>
                 </div>
-                <div class="product-price">$${pet.price.toLocaleString(
-                  "vi-VN"
-                )}</div>
-                <div class="product-details">
-                  <div class="detail-item">
-                    <strong>Giống:</strong> ${pet.breed}
-                  </div>
-                  <div class="detail-item">
-                    <strong>Tuổi:</strong> ${pet.age}
-                  </div>
-                  <div class="detail-item">
-                    <strong>Giới tính:</strong> ${pet.gender}
-                  </div>
-                  <div class="detail-item">
-                    <strong>Đã tiêm phòng:</strong> ${
-                      pet.vaccinated ? "✅ Có" : "❌ Chưa"
-                    }
-                  </div>
+
+                <!-- Review Form -->
+                <div id="reviewForm" class="review-form-container" style="display: none;">
+                  <h3>Viết đánh giá của bạn</h3>
+                  <form id="submitReviewForm">
+                    <div class="form-group">
+                      <label>Đánh giá của bạn:</label>
+                      <div class="star-rating-input" id="starRating">
+                        <span class="star" data-rating="1">☆</span>
+                        <span class="star" data-rating="2">☆</span>
+                        <span class="star" data-rating="3">☆</span>
+                        <span class="star" data-rating="4">☆</span>
+                        <span class="star" data-rating="5">☆</span>
+                      </div>
+                      <input type="hidden" id="ratingValue" value="0" required>
+                    </div>
+                    <div class="form-group">
+                      <label for="reviewComment">Nhận xét:</label>
+                      <textarea id="reviewComment" rows="4" placeholder="Chia sẻ trải nghiệm của bạn về sản phẩm này..." required></textarea>
+                    </div>
+                    <div class="form-actions">
+                      <button type="submit" class="btn submit-review-btn">Gửi đánh giá</button>
+                      <button type="button" class="btn cancel-review-btn" id="cancelReviewBtn">Hủy</button>
+                    </div>
+                  </form>
                 </div>
-                <div class="product-description">
-                  <h3>Mô tả</h3>
-                  <p>${pet.description}</p>
-                </div>
-                <div class="product-actions">
-                  <button id="addToCartBtn" class="btn add-to-cart-btn">Thêm vào giỏ hàng</button>
-                  <a href="webThuCung.html" class="btn secondary-btn">Tiếp tục mua sắm</a>
+
+                <!-- Reviews List -->
+                <div class="reviews-list" id="reviewsList">
+                  ${
+                    productReviews.length > 0
+                      ? productReviews
+                          .map(
+                            (review) => `
+                      <div class="review-item">
+                        <div class="review-header">
+                          <div class="reviewer-info">
+                            <div class="reviewer-avatar">${review.userName
+                              .charAt(0)
+                              .toUpperCase()}</div>
+                            <div class="reviewer-details">
+                              <h4 class="reviewer-name">${review.userName}</h4>
+                              <span class="review-date">${new Date(
+                                review.date
+                              ).toLocaleDateString("vi-VN")}</span>
+                            </div>
+                          </div>
+                          <div class="review-rating-display">
+                            ${generateStarRating(review.rating)}
+                          </div>
+                        </div>
+                        <p class="review-comment">${review.comment}</p>
+                      </div>
+                    `
+                          )
+                          .join("")
+                      : '<div class="no-reviews">Chưa có đánh giá nào. Hãy là người đầu tiên đánh giá sản phẩm này!</div>'
+                  }
                 </div>
               </div>
             </div>
@@ -281,7 +401,106 @@
               updateCartCount();
               alert("Đã thêm vào giỏ hàng!");
             });
+
+          // Review functionality
+          setupReviewFunctionality(id, user);
         }
+      }
+
+      function setupReviewFunctionality(productId, user) {
+        const allReviews =
+          JSON.parse(localStorage.getItem("productReviews")) || {};
+        const productReviews = allReviews[productId] || [];
+
+        // Star rating input
+        const stars = document.querySelectorAll(".star-rating-input .star");
+        const ratingInput = document.getElementById("ratingValue");
+        let selectedRating = 0;
+
+        stars.forEach((star, index) => {
+          star.addEventListener("mouseenter", () => {
+            highlightStars(index + 1);
+          });
+          star.addEventListener("click", () => {
+            selectedRating = index + 1;
+            ratingInput.value = selectedRating;
+            highlightStars(selectedRating);
+          });
+        });
+
+        document
+          .querySelector(".star-rating-input")
+          ?.addEventListener("mouseleave", () => {
+            highlightStars(selectedRating);
+          });
+
+        function highlightStars(count) {
+          stars.forEach((star, index) => {
+            if (index < count) {
+              star.textContent = "★";
+              star.style.color = "#ffd700";
+            } else {
+              star.textContent = "☆";
+              star.style.color = "#ccc";
+            }
+          });
+        }
+
+        // Show/hide review form
+        const writeReviewBtn = document.getElementById("writeReviewBtn");
+        const reviewForm = document.getElementById("reviewForm");
+        const cancelReviewBtn = document.getElementById("cancelReviewBtn");
+
+        writeReviewBtn?.addEventListener("click", () => {
+          reviewForm.style.display =
+            reviewForm.style.display === "none" ? "block" : "none";
+        });
+
+        cancelReviewBtn?.addEventListener("click", () => {
+          reviewForm.style.display = "none";
+          document.getElementById("submitReviewForm").reset();
+          selectedRating = 0;
+          ratingInput.value = 0;
+          highlightStars(0);
+        });
+
+        // Submit review
+        const submitReviewForm = document.getElementById("submitReviewForm");
+        submitReviewForm?.addEventListener("submit", (e) => {
+          e.preventDefault();
+          const rating = parseInt(ratingInput.value);
+          const comment = document.getElementById("reviewComment").value;
+
+          if (rating === 0) {
+            alert("Vui lòng chọn số sao đánh giá!");
+            return;
+          }
+
+          const newReview = {
+            id: Date.now(),
+            productId: productId,
+            userName: user.userName,
+            rating: rating,
+            comment: comment,
+            date: new Date().toISOString(),
+          };
+
+          if (!allReviews[productId]) {
+            allReviews[productId] = [];
+          }
+          allReviews[productId].unshift(newReview);
+          localStorage.setItem("productReviews", JSON.stringify(allReviews));
+
+          alert("Cảm ơn bạn đã đánh giá!");
+          submitReviewForm.reset();
+          selectedRating = 0;
+          ratingInput.value = 0;
+          highlightStars(0);
+          reviewForm.style.display = "none";
+
+          // Reload page to show new review
+          location.reload();
+        });
       }
 
       // Initialize
@@ -289,5 +508,6 @@
       updateCartCount();
       renderProductDetail();
     </script>
+    <script src="js/search.js"></script>
   </body>
 </html>

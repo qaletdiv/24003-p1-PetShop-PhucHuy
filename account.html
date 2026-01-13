@@ -72,7 +72,7 @@
               </li>
               <li>
                 <a href="#favorites" class="nav-link" data-section="favorites"
-                  >Sản phẩm yêu thích</a
+                  >Sản phẩm đã bình luận</a
                 >
               </li>
               <li>
@@ -135,11 +135,11 @@
             </div>
           </div>
 
-          <!-- Favorites Section -->
+          <!-- Reviewed Products Section -->
           <div id="favorites" class="account-section">
-            <h2>Sản phẩm yêu thích</h2>
+            <h2>Sản phẩm đã bình luận</h2>
             <div class="favorites-list" id="favoritesList">
-              <!-- Favorites will be loaded here -->
+              <!-- Reviewed products will be loaded here -->
             </div>
           </div>
 
@@ -378,26 +378,42 @@
         return statusMap[status] || status;
       }
 
-      // Load favorites
+      // Load reviewed products
       function loadFavorites() {
-        const favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+        const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+        const allReviews =
+          JSON.parse(localStorage.getItem("productReviews")) || {};
         const favoritesListEl = document.getElementById("favoritesList");
 
-        if (favorites.length === 0) {
+        // Get all products that user has reviewed
+        const reviewedProducts = new Map();
+        Object.entries(allReviews).forEach(([productId, reviews]) => {
+          const userReviews = reviews.filter(
+            (review) => review.userName === currentUser?.userName
+          );
+          if (userReviews.length > 0) {
+            reviewedProducts.set(parseInt(productId), userReviews);
+          }
+        });
+
+        if (reviewedProducts.size === 0) {
           favoritesListEl.innerHTML = `
             <div class="empty-state">
-              <h3>Bạn chưa có sản phẩm yêu thích nào</h3>
-              <p>Hãy thêm sản phẩm vào danh sách yêu thích!</p>
+              <h3>Bạn chưa bình luận sản phẩm nào</h3>
+              <p>Hãy mua sắm và để lại đánh giá cho sản phẩm bạn yêu thích!</p>
               <a href="product.html" class="btn primary-btn">Khám phá sản phẩm</a>
             </div>
           `;
           return;
         }
 
-        favoritesListEl.innerHTML = favorites
-          .map((favId) => {
-            const pet = petsData.find((p) => p.id === favId);
+        favoritesListEl.innerHTML = Array.from(reviewedProducts.entries())
+          .map(([productId, reviews]) => {
+            const pet = petsData.find((p) => p.id === productId);
             if (!pet) return "";
+
+            const latestReview = reviews[0];
+            const reviewCount = reviews.length;
 
             return `
             <div class="favorite-item">
@@ -406,10 +422,23 @@
                 <h4>${pet.name}</h4>
                 <p>Giống: ${pet.breed}</p>
                 <p class="price">$${pet.price}</p>
+                <div class="review-info">
+                  <span class="review-badge">Đã bình luận ${reviewCount} lần</span>
+                  <div class="review-preview">
+                    <span class="review-rating">${"★".repeat(
+                      latestReview.rating
+                    )}${"☆".repeat(5 - latestReview.rating)}</span>
+                    <span class="review-date">${new Date(
+                      latestReview.date
+                    ).toLocaleDateString("vi-VN")}</span>
+                  </div>
+                </div>
               </div>
               <div class="item-actions">
-                <a href="productDetail.html?id=${pet.id}" class="btn primary-btn">Xem chi tiết</a>
-                <button class="btn danger-btn" onclick="removeFavorite(${pet.id})">Xóa</button>
+                <a href="productDetail.html?id=${
+                  pet.id
+                }" class="btn primary-btn">Xem chi tiết</a>
+                <button class="btn danger-btn" onclick="removeAllReviews(${productId})" title="Xóa tất cả bình luận">Xóa bình luận</button>
               </div>
             </div>
           `;
@@ -501,6 +530,37 @@
         window.location.href = `order-confirmation.html?orderId=${orderId}`;
       };
 
+      // Remove all reviews for a product
+      window.removeAllReviews = function (productId) {
+        if (
+          !confirm(
+            "Bạn có chắc chắn muốn xóa tất cả bình luận của sản phẩm này?"
+          )
+        ) {
+          return;
+        }
+
+        const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+        const allReviews =
+          JSON.parse(localStorage.getItem("productReviews")) || {};
+
+        if (allReviews[productId]) {
+          // Remove all reviews by current user for this product
+          allReviews[productId] = allReviews[productId].filter(
+            (review) => review.userName !== currentUser?.userName
+          );
+
+          // If no reviews left, remove the product entry
+          if (allReviews[productId].length === 0) {
+            delete allReviews[productId];
+          }
+
+          localStorage.setItem("productReviews", JSON.stringify(allReviews));
+          alert("Đã xóa bình luận thành công!");
+          loadFavorites(); // Reload the list
+        }
+      };
+
       window.cancelOrder = function (orderId) {
         if (confirm("Bạn có chắc chắn muốn hủy đơn hàng này?")) {
           const orders = JSON.parse(localStorage.getItem("orders")) || [];
@@ -512,13 +572,6 @@
             alert("Đơn hàng đã được hủy!");
           }
         }
-      };
-
-      window.removeFavorite = function (petId) {
-        const favorites = JSON.parse(localStorage.getItem("favorites")) || [];
-        const updatedFavorites = favorites.filter((id) => id !== petId);
-        localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
-        loadFavorites();
       };
 
       // Initialize
@@ -832,6 +885,10 @@
         border-radius: 8px;
       }
 
+      .item-info {
+        flex: 1;
+      }
+
       .item-info h4 {
         margin-bottom: 0.5rem;
         color: var(--dark-color);
@@ -847,6 +904,41 @@
         font-weight: bold;
         color: var(--accent-color);
         font-size: 1.1rem;
+      }
+
+      .review-info {
+        margin-top: 0.8rem;
+        padding-top: 0.8rem;
+        border-top: 1px solid #eee;
+      }
+
+      .review-badge {
+        display: inline-block;
+        background: linear-gradient(135deg, var(--secondary-color), #3db5a8);
+        color: white;
+        padding: 0.3rem 0.8rem;
+        border-radius: 15px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+      }
+
+      .review-preview {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-top: 0.5rem;
+      }
+
+      .review-rating {
+        color: gold;
+        font-size: 1rem;
+        letter-spacing: 2px;
+      }
+
+      .review-date {
+        font-size: 0.85rem;
+        color: #999;
       }
 
       .item-actions {
@@ -956,5 +1048,6 @@
         }
       }
     </style>
+    <script src="js/search.js"></script>
   </body>
 </html>

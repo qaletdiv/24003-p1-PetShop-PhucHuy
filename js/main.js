@@ -111,8 +111,10 @@ document.addEventListener("DOMContentLoaded", () => {
     accountLink.style.gap = "10px";
 
     accountLink.innerHTML = `
-      <img src="${user.avatar}" alt="Avatar" style="width:32px;height:32px;border-radius:50%;" />
-      <span>Hi, ${user.userName}</span>
+      <a href="profileDetail.html" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: white;">
+        <img src="${user.avatar}" alt="Avatar" style="width:32px;height:32px;border-radius:50%;cursor:pointer;" />
+        <span>Hi, ${user.userName}</span>
+      </a>
       <a href="#" id="logout-link" style="color: red;">Logout</a>
     `;
 
@@ -124,26 +126,17 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-//search engine
-// document.getElementById("search-form").addEventListener("submit", function (e) {
-//   e.preventDefault();
-//   const searchTerm = document
-//     .getElementById("search-input")
-//     .value.toLowerCase();
-//   const filteredPets = petsData.filter((pet) =>
-//     pet.name.toLowerCase().includes(searchTerm)
-//   );
-//   renderProducts(filteredPets);
-// });
-//search engine each word
+//search engine - redirect to product.html with search query
 document.getElementById("search-form").addEventListener("submit", function (e) {
   e.preventDefault();
-  const searchTerm = document
-    .getElementById("search-input")
-    .value.toLowerCase()
-    .split(" ");
-  const filteredPets = petsData.filter((pet) =>
-    searchTerm.every((term) => pet.name.toLowerCase().includes(term))
-  );
-  renderProducts(filteredPets);
+  const searchTerm = document.getElementById("search-input").value.trim();
+  if (searchTerm) {
+    // Redirect to product.html with search query parameter
+    window.location.href = `product.html?search=${encodeURIComponent(
+      searchTerm
+    )}`;
+  } else {
+    // If empty, just go to product page
+    window.location.href = "product.html";
+  }
 });

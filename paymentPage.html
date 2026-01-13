@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Thanh toán - Pet Store</title>
+    <link rel="stylesheet" href="webThuCung.css" />
+    <link rel="stylesheet" href="product.css" />
+    <link rel="stylesheet" href="paymentPage.css" />
+  </head>
+  <body>
+    <header class="header-1">
+      <div class="logo">
+        <a href="webThuCung.html">
+          <img src="images/logo.avif" alt="logo" />
+        </a>
+      </div>
+      <form action="#" method="get" class="search-form" id="search-form">
+        <input
+          type="text"
+          name="search"
+          placeholder="Search pets..."
+          id="search-input"
+        />
+        <button class="button" type="submit">Search</button>
+      </form>
+      <nav class="nav">
+        <ul class="nav-list">
+          <li><a href="webThuCung.html">Home</a></li>
+          <li><a href="product.html">Product</a></li>
+          <li><a href="#con">Contact</a></li>
+          <li id="auth-links" class="fasUsers">
+            <a href="login.html" id="login-link">Login</a>
+            <a href="register.html" id="register-link">Register</a>
+          </li>
+          <li id="account-link" style="display: none">
+            <a href="account.html">My Account</a>
+            <a href="#" id="logout-link">Logout</a>
+          </li>
+          <li>
+            <a href="cart.html" id="cart-link"
+              >Cart(<span id="cart-count">0</span>)</a
+            >
+          </li>
+        </ul>
+      </nav>
+    </header>
+
+    <main class="payment-container">
+      <div class="payment-header">
+        <h1>Thanh toán đơn hàng</h1>
+        <div class="payment-steps">
+          <div class="step completed">
+            <span class="step-number">✓</span>
+            <span class="step-label">Giỏ hàng</span>
+          </div>
+          <div class="step completed">
+            <span class="step-number">✓</span>
+            <span class="step-label">Thông tin</span>
+          </div>
+          <div class="step active">
+            <span class="step-number">3</span>
+            <span class="step-label">Thanh toán</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="payment-content">
+        <div class="payment-main">
+          <div class="payment-section">
+            <h2 class="section-title">
+              <span class="title-icon">💳</span>
+              Phương thức thanh toán
+            </h2>
+            <div class="payment-methods">
+              <div class="payment-method-card" data-method="creditCard">
+                <input
+                  type="radio"
+                  id="creditCard"
+                  name="paymentMethod"
+                  value="creditCard"
+                  checked
+                />
+                <label for="creditCard">
+                  <div class="method-header">
+                    <span class="method-icon">💳</span>
+                    <span class="method-name">Thẻ tín dụng / Ghi nợ</span>
+                  </div>
+                  <div class="method-description">
+                    Visa, Mastercard, American Express
+                  </div>
+                </label>
+              </div>
+
+              <div class="payment-method-card" data-method="bankTransfer">
+                <input
+                  type="radio"
+                  id="bankTransfer"
+                  name="paymentMethod"
+                  value="bankTransfer"
+                />
+                <label for="bankTransfer">
+                  <div class="method-header">
+                    <span class="method-icon">🏦</span>
+                    <span class="method-name">Chuyển khoản ngân hàng</span>
+                  </div>
+                  <div class="method-description">
+                    Chuyển khoản trực tiếp vào tài khoản ngân hàng
+                  </div>
+                </label>
+              </div>
+
+              <div class="payment-method-card" data-method="cod">
+                <input
+                  type="radio"
+                  id="cod"
+                  name="paymentMethod"
+                  value="cod"
+                />
+                <label for="cod">
+                  <div class="method-header">
+                    <span class="method-icon">💰</span>
+                    <span class="method-name">Thanh toán khi nhận hàng</span>
+                  </div>
+                  <div class="method-description">
+                    Thanh toán bằng tiền mặt khi nhận được hàng
+                  </div>
+                </label>
+              </div>
+
+              <div class="payment-method-card" data-method="momo">
+                <input
+                  type="radio"
+                  id="momo"
+                  name="paymentMethod"
+                  value="momo"
+                />
+                <label for="momo">
+                  <div class="method-header">
+                    <span class="method-icon">📱</span>
+                    <span class="method-name">Ví điện tử MoMo</span>
+                  </div>
+                  <div class="method-description">
+                    Thanh toán nhanh qua ứng dụng MoMo
+                  </div>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Credit Card Form -->
+          <div id="creditCardForm" class="payment-form-section">
+            <h2 class="section-title">
+              <span class="title-icon">🔒</span>
+              Thông tin thẻ
+            </h2>
+            <form id="cardForm" class="card-form">
+              <div class="form-group">
+                <label for="cardNumber">Số thẻ *</label>
+                <input
+                  type="text"
+                  id="cardNumber"
+                  name="cardNumber"
+                  placeholder="1234 5678 9012 3456"
+                  maxlength="19"
+                  required
+                />
+                <div class="card-icons">
+                  <span class="card-icon">💳</span>
+                  <span class="card-icon">💳</span>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="expiryDate">Ngày hết hạn *</label>
+                  <input
+                    type="text"
+                    id="expiryDate"
+                    name="expiryDate"
+                    placeholder="MM/YY"
+                    maxlength="5"
+                    required
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="cvv">CVV *</label>
+                  <input
+                    type="text"
+                    id="cvv"
+                    name="cvv"
+                    placeholder="123"
+                    maxlength="4"
+                    required
+                  />
+                  <span class="cvv-hint">3-4 số ở mặt sau thẻ</span>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="cardName">Tên chủ thẻ *</label>
+                <input
+                  type="text"
+                  id="cardName"
+                  name="cardName"
+                  placeholder="NGUYEN VAN A"
+                  required
+                />
+              </div>
+            </form>
+          </div>
+
+          <!-- Bank Transfer Info -->
+          <div id="bankTransferInfo" class="payment-info-section" style="display: none;">
+            <h2 class="section-title">
+              <span class="title-icon">🏦</span>
+              Thông tin chuyển khoản
+            </h2>
+            <div class="bank-info">
+              <div class="info-item">
+                <span class="info-label">Ngân hàng:</span>
+                <span class="info-value">Vietcombank</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Số tài khoản:</span>
+                <span class="info-value">0123456789</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Chủ tài khoản:</span>
+                <span class="info-value">PET STORE COMPANY</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Nội dung chuyển khoản:</span>
+                <span class="info-value" id="transferContent">DH-<span id="orderIdDisplay"></span></span>
+              </div>
+              <div class="info-note">
+                <p>⚠️ Vui lòng chuyển khoản đúng số tiền và nội dung để đơn hàng được xử lý nhanh nhất.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- MoMo Payment Info -->
+          <div id="momoInfo" class="payment-info-section" style="display: none;">
+            <h2 class="section-title">
+              <span class="title-icon">📱</span>
+              Thanh toán MoMo
+            </h2>
+            <div class="momo-info">
+              <div class="qr-code-placeholder">
+                <div class="qr-code">
+                  <div class="qr-pattern"></div>
+                  <p>Quét mã QR để thanh toán</p>
+                </div>
+              </div>
+              <div class="momo-steps">
+                <div class="step-item">
+                  <span class="step-num">1</span>
+                  <span>Mở ứng dụng MoMo</span>
+                </div>
+                <div class="step-item">
+                  <span class="step-num">2</span>
+                  <span>Quét mã QR bên cạnh</span>
+                </div>
+                <div class="step-item">
+                  <span class="step-num">3</span>
+                  <span>Xác nhận thanh toán</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="payment-sidebar">
+          <div class="order-summary-card">
+            <h3 class="summary-title">Tóm tắt đơn hàng</h3>
+            <div class="order-items" id="orderItems">
+              <!-- Items will be loaded here -->
+            </div>
+            <div class="summary-divider"></div>
+            <div class="summary-totals">
+              <div class="total-row">
+                <span>Tạm tính:</span>
+                <span id="subtotal">$0.00</span>
+              </div>
+              <div class="total-row">
+                <span>Phí vận chuyển:</span>
+                <span id="shipping">$10.00</span>
+              </div>
+              <div class="total-row">
+                <span>Thuế (10%):</span>
+                <span id="tax">$0.00</span>
+              </div>
+              <div class="total-row total-final">
+                <span>Tổng cộng:</span>
+                <span id="total">$0.00</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="security-badge">
+            <div class="badge-icon">🔒</div>
+            <div class="badge-text">
+              <strong>Thanh toán an toàn</strong>
+              <p>Thông tin của bạn được mã hóa và bảo mật</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="payment-actions">
+        <a href="checkout.html" class="btn btn-back">← Quay lại</a>
+        <button id="completePaymentBtn" class="btn btn-primary">
+          Hoàn tất thanh toán
+        </button>
+      </div>
+    </main>
+
+    <script type="module">
+      // Authentication state management
+      function updateAuthState() {
+        const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+        const authLinks = document.getElementById("auth-links");
+        const accountLink = document.getElementById("account-link");
+        const logoutLink = document.getElementById("logout-link");
+
+        if (currentUser) {
+          authLinks.style.display = "none";
+          accountLink.style.display = "block";
+          accountLink.querySelector(
+            "a"
+          ).textContent = `Hi, ${currentUser.userName}`;
+        } else {
+          authLinks.style.display = "block";
+          accountLink.style.display = "none";
+          // Redirect to login if not authenticated
+          window.location.href = "login.html";
+        }
+
+        // Logout functionality
+        logoutLink?.addEventListener("click", (e) => {
+          e.preventDefault();
+          localStorage.removeItem("currentUser");
+          localStorage.removeItem("cart");
+          window.location.href = "webThuCung.html";
+        });
+      }
+
+      // Cart count update
+      function updateCartCount() {
+        const cart = JSON.parse(localStorage.getItem("cart")) || [];
+        const total = cart.reduce((sum, item) => sum + item.quantity, 0);
+        const countEl = document.getElementById("cart-count");
+        if (countEl) countEl.textContent = total;
+      }
+
+      // Load order summary
+      function loadOrderSummary() {
+        const cart = JSON.parse(localStorage.getItem("cart")) || [];
+        const orderItemsEl = document.getElementById("orderItems");
+
+        if (cart.length === 0) {
+          alert("Giỏ hàng của bạn đang trống!");
+          window.location.href = "cart.html";
+          return;
+        }
+
+        orderItemsEl.innerHTML = "";
+        let subtotal = 0;
+
+        cart.forEach((item) => {
+          const itemEl = document.createElement("div");
+          itemEl.classList.add("order-item");
+          itemEl.innerHTML = `
+            <div class="item-image">
+              <img src="${item.image}" alt="${item.name}" />
+            </div>
+            <div class="item-details">
+              <h4>${item.name}</h4>
+              <p class="item-breed">Giống: ${item.breed}</p>
+              <p class="item-quantity">Số lượng: ${item.quantity}</p>
+            </div>
+            <div class="item-price">$${(item.price * item.quantity).toFixed(
+              2
+            )}</div>
+          `;
+          orderItemsEl.appendChild(itemEl);
+          subtotal += item.price * item.quantity;
+        });
+
+        updateTotals(subtotal);
+      }
+
+      function updateTotals(subtotal) {
+        const shipping = 10;
+        const tax = subtotal * 0.1;
+        const total = subtotal + shipping + tax;
+
+        document.getElementById("subtotal").textContent = `$${subtotal.toFixed(
+          2
+        )}`;
+        document.getElementById("shipping").textContent = `$${shipping.toFixed(
+          2
+        )}`;
+        document.getElementById("tax").textContent = `$${tax.toFixed(2)}`;
+        document.getElementById("total").textContent = `$${total.toFixed(2)}`;
+      }
+
+      // Payment method toggle
+      function togglePaymentMethod() {
+        const selectedMethod = document.querySelector(
+          'input[name="paymentMethod"]:checked'
+        )?.value;
+        
+        if (!selectedMethod) return;
+        
+        const creditCardForm = document.getElementById("creditCardForm");
+        const bankTransferInfo = document.getElementById("bankTransferInfo");
+        const momoInfo = document.getElementById("momoInfo");
+
+        // Hide all
+        if (creditCardForm) creditCardForm.style.display = "none";
+        if (bankTransferInfo) bankTransferInfo.style.display = "none";
+        if (momoInfo) momoInfo.style.display = "none";
+
+        // Remove active class from all cards
+        document.querySelectorAll(".payment-method-card").forEach((card) => {
+          card.classList.remove("active");
+        });
+
+        // Add active class to selected card
+        const selectedCard = document.querySelector(
+          `.payment-method-card[data-method="${selectedMethod}"]`
+        );
+        if (selectedCard) {
+          selectedCard.classList.add("active");
+        }
+
+        // Show selected
+        if (selectedMethod === "creditCard" && creditCardForm) {
+          creditCardForm.style.display = "block";
+        } else if (selectedMethod === "bankTransfer" && bankTransferInfo) {
+          bankTransferInfo.style.display = "block";
+          // Generate order ID for transfer
+          const orderId = Date.now();
+          const orderIdDisplay = document.getElementById("orderIdDisplay");
+          if (orderIdDisplay) {
+            orderIdDisplay.textContent = orderId;
+          }
+        } else if (selectedMethod === "momo" && momoInfo) {
+          momoInfo.style.display = "block";
+        }
+      }
+
+      // Format card number
+      document.getElementById("cardNumber")?.addEventListener("input", (e) => {
+        let value = e.target.value.replace(/\s/g, "");
+        let formattedValue = value.match(/.{1,4}/g)?.join(" ") || value;
+        e.target.value = formattedValue;
+      });
+
+      // Format expiry date
+      document.getElementById("expiryDate")?.addEventListener("input", (e) => {
+        let value = e.target.value.replace(/\D/g, "");
+        if (value.length >= 2) {
+          value = value.substring(0, 2) + "/" + value.substring(2, 4);
+        }
+        e.target.value = value;
+      });
+
+      // Complete payment
+      document
+        .getElementById("completePaymentBtn")
+        ?.addEventListener("click", () => {
+          const cart = JSON.parse(localStorage.getItem("cart")) || [];
+          if (cart.length === 0) {
+            alert("Giỏ hàng của bạn đang trống!");
+            return;
+          }
+
+          const paymentMethod = document.querySelector(
+            'input[name="paymentMethod"]:checked'
+          ).value;
+
+          // Validate credit card if selected
+          if (paymentMethod === "creditCard") {
+            const cardForm = document.getElementById("cardForm");
+            if (!cardForm.checkValidity()) {
+              cardForm.reportValidity();
+              return;
+            }
+          }
+
+          // Get checkout data from localStorage or use defaults
+          const checkoutData =
+            JSON.parse(localStorage.getItem("checkoutData")) || {};
+          const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+
+          // Calculate totals
+          const subtotal = cart.reduce(
+            (sum, item) => sum + item.price * item.quantity,
+            0
+          );
+          const shipping = 10;
+          const tax = subtotal * 0.1;
+          const total = subtotal + shipping + tax;
+
+          // Create order
+          const order = {
+            id: Date.now(),
+            date: new Date().toISOString(),
+            customer: {
+              ...checkoutData,
+              email: currentUser?.email || checkoutData.email,
+              userName: currentUser?.userName || checkoutData.firstName,
+            },
+            items: cart,
+            paymentMethod: paymentMethod,
+            status: "pending",
+            total: total,
+          };
+
+          // Save order
+          const orders = JSON.parse(localStorage.getItem("orders")) || [];
+          orders.push(order);
+          localStorage.setItem("orders", JSON.stringify(orders));
+
+          // Clear cart
+          localStorage.removeItem("cart");
+          localStorage.removeItem("checkoutData");
+
+          // Show success and redirect
+          alert("Thanh toán thành công! Cảm ơn bạn đã mua hàng!");
+          window.location.href = `orderConfirmationPage.html?orderId=${order.id}`;
+        });
+
+      // Payment method change handlers
+      document
+        .querySelectorAll('input[name="paymentMethod"]')
+        .forEach((radio) => {
+          radio.addEventListener("change", togglePaymentMethod);
+        });
+
+      // Initialize
+      updateAuthState();
+      updateCartCount();
+      loadOrderSummary();
+      togglePaymentMethod();
+    </script>
+  </body>
+</html>
+

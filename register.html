@@ -28,7 +28,20 @@
             <a href="register.html">Register</a>
           </li>
           <li>
-            <a href="cart.html">Cart(<span id="cart-count">0</span>)</a>
+            <!-- <a href="cart.html">Cart(<span id="cart-count">0</span>)</a> -->
+            <a href="#" id="cart-link-register"
+              >Cart(<span id="cart-count">0</span>)</a
+            >
+            <script>
+              document
+                .getElementById("cart-link-register")
+                .addEventListener("click", function (e) {
+                  e.preventDefault();
+                  alert(
+                    "vui lòng đăng ký và điền đầy đủ thông tin để xem giỏ hàng."
+                  );
+                });
+            </script>
           </li>
         </ul>
       </nav>
@@ -75,5 +88,6 @@
         .getElementById("btn-register")
         .addEventListener("click", register);
     </script>
+    <script src="js/search.js"></script>
   </body>
 </html>
