@@ -244,6 +244,11 @@
           );
           const reviewCount = productReviews.length || pet.reviews.count;
 
+          // Related products: same type, exclude current, limit 4
+          const relatedProducts = petsData
+            .filter((p) => p.id !== pet.id && p.type === pet.type)
+            .slice(0, 4);
+
           container.innerHTML = `
             <div class="product-detail-wrapper">
               <div class="product-detail-grid">
@@ -296,6 +301,22 @@
                   <div class="product-description-card">
                     <h3 class="description-title">Mô tả sản phẩm</h3>
                     <p class="description-text">${pet.description}</p>
+                  </div>
+                  <div class="quantity-section">
+                    <label for="quantityInput" class="quantity-label">Số lượng:</label>
+                    <div class="quantity-selector">
+                      <button type="button" id="decreaseQuantity" class="quantity-btn" aria-label="Giảm số lượng">−</button>
+                      <input 
+                        type="number" 
+                        id="quantityInput" 
+                        class="quantity-input" 
+                        value="1" 
+                        min="1" 
+                        max="99"
+                        aria-label="Số lượng sản phẩm"
+                      />
+                      <button type="button" id="increaseQuantity" class="quantity-btn" aria-label="Tăng số lượng">+</button>
+                    </div>
                   </div>
                   <div class="product-actions">
                     <button id="addToCartBtn" class="btn add-to-cart-btn">
@@ -381,26 +402,97 @@
                   }
                 </div>
               </div>
+              <!-- Related Products Section -->
+              <div class="related-products-section">
+                <h2 class="related-title">
+                  <span class="title-icon">🦴</span>
+                  Thú cưng liên quan
+                </h2>
+                <div class="related-grid">
+                  ${
+                    relatedProducts.length > 0
+                      ? relatedProducts
+                          .map(
+                            (rp) => `
+                      <div class="related-card" data-id="${rp.id}">
+                        <div class="related-image-wrapper">
+                          <img src="${rp.image}" alt="${rp.name}" class="related-image" />
+                        </div>
+                        <div class="related-info">
+                          <h3 class="related-name">${rp.name}</h3>
+                          <p class="related-breed">${rp.breed}</p>
+                          <p class="related-price">$${rp.price.toLocaleString("vi-VN")}</p>
+                          <button class="btn related-detail-btn" data-id="${rp.id}">
+                            Xem chi tiết
+                          </button>
+                        </div>
+                      </div>
+                    `
+                          )
+                          .join("")
+                      : '<p class="no-related">Hiện chưa có sản phẩm liên quan.</p>'
+                  }
+                </div>
+              </div>
             </div>
           `;
+
+          // Quantity selector functionality
+          const quantityInput = document.getElementById("quantityInput");
+          const decreaseBtn = document.getElementById("decreaseQuantity");
+          const increaseBtn = document.getElementById("increaseQuantity");
+
+          decreaseBtn.addEventListener("click", () => {
+            let currentValue = parseInt(quantityInput.value) || 1;
+            if (currentValue > 1) {
+              quantityInput.value = currentValue - 1;
+            }
+          });
+
+          increaseBtn.addEventListener("click", () => {
+            let currentValue = parseInt(quantityInput.value) || 1;
+            if (currentValue < 99) {
+              quantityInput.value = currentValue + 1;
+            }
+          });
+
+          quantityInput.addEventListener("change", () => {
+            let value = parseInt(quantityInput.value) || 1;
+            if (value < 1) {
+              quantityInput.value = 1;
+            } else if (value > 99) {
+              quantityInput.value = 99;
+            }
+          });
 
           // Add to cart functionality
           document
             .getElementById("addToCartBtn")
             .addEventListener("click", () => {
               let cart = JSON.parse(localStorage.getItem("cart")) || [];
+              const quantity = parseInt(quantityInput.value) || 1;
               const existing = cart.find((item) => item.id === pet.id);
 
               if (existing) {
-                existing.quantity += 1;
+                existing.quantity += quantity;
               } else {
-                cart.push({ ...pet, quantity: 1 });
+                cart.push({ ...pet, quantity: quantity });
               }
 
               localStorage.setItem("cart", JSON.stringify(cart));
               updateCartCount();
-              alert("Đã thêm vào giỏ hàng!");
+              alert(`Đã thêm ${quantity} sản phẩm vào giỏ hàng!`);
+              // Reset quantity to 1 after adding
+              quantityInput.value = 1;
             });
+
+          // Related products navigation
+          document.querySelectorAll(".related-detail-btn").forEach((btn) => {
+            btn.addEventListener("click", (e) => {
+              const targetId = e.currentTarget.dataset.id;
+              window.location.href = `productDetail.html?id=${targetId}`;
+            });
+          });
 
           // Review functionality
           setupReviewFunctionality(id, user);

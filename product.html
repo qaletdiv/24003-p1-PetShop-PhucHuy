@@ -289,8 +289,14 @@
         render();
       });
 
-      sortEl.addEventListener("change", () => render());
-      filterBtn.addEventListener("click", () => render());
+      sortEl.addEventListener("change", () => {
+        currentPage = 1;
+        render();
+      });
+      filterBtn.addEventListener("click", () => {
+        currentPage = 1;
+        render();
+      });
 
       // Check for search query parameter on page load
       const urlParams = new URLSearchParams(window.location.search);

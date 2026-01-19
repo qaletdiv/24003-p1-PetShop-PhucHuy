@@ -23,29 +23,80 @@ function renderProducts(data) {
         <span class="review-count">(${pet.reviews.count})</span>
       </div>
       <p class="product-price">$${pet.price}</p>
+      <div class="quantity-selector-small">
+        <label class="quantity-label-small">Số lượng:</label>
+        <div class="quantity-controls">
+          <button type="button" class="quantity-btn-small decrease" data-id="${pet.id}">−</button>
+          <input 
+            type="number" 
+            class="quantity-input-small" 
+            data-id="${pet.id}"
+            value="1" 
+            min="1" 
+            max="99"
+          />
+          <button type="button" class="quantity-btn-small increase" data-id="${pet.id}">+</button>
+        </div>
+      </div>
       <button class="add-to-cart" data-id="${pet.id}">Thêm vào giỏ</button>
     `;
 
     // Navigate to productDetail.html with pet id on card click (except button)
     productCard.addEventListener("click", (e) => {
-      if (!e.target.classList.contains("add-to-cart")) {
+      if (!e.target.classList.contains("add-to-cart") && 
+          !e.target.classList.contains("quantity-btn-small") &&
+          !e.target.classList.contains("quantity-input-small") &&
+          !e.target.classList.contains("quantity-controls") &&
+          !e.target.classList.contains("quantity-selector-small") &&
+          !e.target.closest(".quantity-selector-small")) {
         window.location.href = `productDetail.html?id=${pet.id}`;
       }
     });
 
-    productContainer.appendChild(productCard);
-  });
+    // Quantity controls
+    const quantityInput = productCard.querySelector(`.quantity-input-small[data-id="${pet.id}"]`);
+    const decreaseBtn = productCard.querySelector(`.decrease[data-id="${pet.id}"]`);
+    const increaseBtn = productCard.querySelector(`.increase[data-id="${pet.id}"]`);
 
-  // Add event listeners to cart buttons
-  document.querySelectorAll(".add-to-cart").forEach((button) => {
-    button.addEventListener("click", (e) => {
-      const petId = parseInt(e.target.dataset.id);
-      addToCart(petId);
+    decreaseBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      let currentValue = parseInt(quantityInput.value) || 1;
+      if (currentValue > 1) {
+        quantityInput.value = currentValue - 1;
+      }
     });
+
+    increaseBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      let currentValue = parseInt(quantityInput.value) || 1;
+      if (currentValue < 99) {
+        quantityInput.value = currentValue + 1;
+      }
+    });
+
+    quantityInput.addEventListener("change", (e) => {
+      e.stopPropagation();
+      let value = parseInt(quantityInput.value) || 1;
+      if (value < 1) {
+        quantityInput.value = 1;
+      } else if (value > 99) {
+        quantityInput.value = 99;
+      }
+    });
+
+    // Add event listener for add to cart button
+    const addToCartBtn = productCard.querySelector(".add-to-cart");
+    addToCartBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const quantity = parseInt(quantityInput.value) || 1;
+      addToCart(pet.id, quantity);
+    });
+
+    productContainer.appendChild(productCard);
   });
 }
 
-function addToCart(id) {
+function addToCart(id, quantity = 1) {
   const registerModal = document.getElementById("registerModal");
   const loginModal = document.getElementById("loginModal");
   const currentUser = JSON.parse(localStorage.getItem("currentUser"));
@@ -59,15 +110,15 @@ function addToCart(id) {
   const existingItem = cart.find((item) => item.id === id);
 
   if (existingItem) {
-    existingItem.quantity += 1;
+    existingItem.quantity += quantity;
   } else {
     const pet = petsData.find((p) => p.id === id);
-    cart.push({ ...pet, quantity: 1 });
+    cart.push({ ...pet, quantity: quantity });
   }
 
   localStorage.setItem("cart", JSON.stringify(cart));
   updateCartCount();
-  alert("Đã thêm vào giỏ hàng!");
+  alert(`Đã thêm ${quantity} sản phẩm vào giỏ hàng!`);
 }
 
 function updateCartCount() {
